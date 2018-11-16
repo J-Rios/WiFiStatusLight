@@ -18,19 +18,20 @@
 
 // Device libraries (ESP-IDF)
 #include "esp_spi_flash.h"
-#include "driver/gpio.h"
 #include "driver/uart.h"
 #include "sdkconfig.h"
 
 // Custom libraries
-
+#include "esprgb.h"
 
 /**************************************************************************************************/
 
 /* Defines, Macros, Constants and Types */
 
 // I/O pins defines
-#define P_O_LED GPIO_NUM_13
+#define P_O_RGBLED_R GPIO_NUM_12
+#define P_O_RGBLED_G GPIO_NUM_13
+#define P_O_RGBLED_B GPIO_NUM_14
 
 // MAC Address length
 #define LENGTH_MAC_ADDR 18
@@ -46,7 +47,7 @@
 extern "C" { void app_main(void); }
 
 // Tasks Functions
-void task_blink(void *pvParameter);
+void task_rgb_test(void *pvParameter);
 
 // Common Functions
 void show_device_info(void);
@@ -58,39 +59,62 @@ void show_device_macs(void);
 
 void app_main(void)
 {
+    ESPRGB LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
+
     printf("\n");
     printf("-------------------------------------------------------------------------------\n");
     printf("\nSystem start.\n\n");
-
     show_device_info();
 
+    LED_RGB.init();
+    printf("RGB LED initialized\n");
+    
     // Create Blink Task
-    xTaskCreate(&task_blink, "task_blink", configMINIMAL_STACK_SIZE+128, NULL, 5, NULL);
+    if(xTaskCreate(&task_rgb_test, "task_rgb_test", configMINIMAL_STACK_SIZE+128, (void*)&LED_RGB, 
+                   tskIDLE_PRIORITY+5, NULL) != pdPASS)
+    {
+		printf("\nError when creating blink task (not enough memory?)\n");
+        printf("Rebooting the system...\n\n");
+        esp_restart();
+    }
+    
+    // Keep Main "Task" running to avoid lost scope data that has been passed to Tasks
+    while(1)
+    {
+        delay(1000);
+    }
 }
 
 /**************************************************************************************************/
 
-/* Blink Task */
+/* RGB Test Task */
 
-void task_blink(void *pvParameter)
+void task_rgb_test(void *pvParameter)
 {
-    printf("Blink task initialized.\n");
+    printf("\nRGB task initialized.\n");
 
-    // Configure GPIO as output
-    gpio_pad_select_gpio(P_O_LED);
-    gpio_set_direction(P_O_LED, GPIO_MODE_OUTPUT);
-    printf("LED pin set as output.\n");
+    // Get provided parameter
+    ESPRGB* this_LED_RGB = (ESPRGB*)pvParameter;
 
     while(1)
     {
-        // Turn LED on and wait 1s
-        printf("LED ON.\n");
-        gpio_set_level(P_O_LED, 0);
+        this_LED_RGB->on(RGB_RED);
         delay(1000);
-        
-        // Turn LED on
-        printf("LED OFF.\n");
-        gpio_set_level(P_O_LED, 1);
+        this_LED_RGB->on(RGB_GREEN);
+        delay(1000);
+        this_LED_RGB->on(RGB_BLUE);
+        delay(1000);
+        this_LED_RGB->off(RGB_BLUE);
+        delay(1000);
+        this_LED_RGB->on(RGB_RED, false);
+        delay(1000);
+        this_LED_RGB->on(RGB_GREEN, false);
+        delay(1000);
+        this_LED_RGB->on(RGB_BLUE, false);
+        delay(1000);
+        this_LED_RGB->off();
+        delay(1000);
+        this_LED_RGB->on();
         delay(1000);
     }
 }
