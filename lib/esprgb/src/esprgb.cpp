@@ -13,6 +13,8 @@
 
 /**************************************************************************************************/
 
+/* Constructor */
+
 // ESPRGB constructor, get the GPIO pins numbers that going to be used for RGB
 ESPRGB::ESPRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
 {
@@ -20,6 +22,10 @@ ESPRGB::ESPRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
     this_pin_g = pin_g;
     this_pin_b = pin_b;
 }
+
+/**************************************************************************************************/
+
+/* Public Methods */
 
 // Initialize R, G and B GPIOs as outputs and set them to HIGH (LED off)
 void ESPRGB::init(void)
@@ -114,28 +120,28 @@ void ESPRGB::toggle(const esprgb_led led, const bool toggle_others)
 
 /**************************************************************************************************/
 
-/* Private Methods */
+/* Private Methods (Specific device HAL functions) */
 
-// Specific device HAL function: Set the provided GPIO as Output
+// Set the provided GPIO as Output
 void ESPRGB::gpio_as_output(const uint8_t gpio)
 {
     gpio_pad_select_gpio((gpio_num_t)gpio);
     gpio_set_direction((gpio_num_t)gpio, GPIO_MODE_OUTPUT);
 }
 
-// Specific device HAL function: Set the provided output GPIO to LOW
+// Set the provided output GPIO to LOW
 void ESPRGB::gpio_low(const uint8_t gpio)
 {
     gpio_set_level((gpio_num_t)gpio, 0);
 }
 
-// Specific device HAL function: Set the provided output GPIO to LOW
+// Set the provided output GPIO to LOW
 void ESPRGB::gpio_high(const uint8_t gpio)
 {
     gpio_set_level((gpio_num_t)gpio, 1);
 }
 
-// Specific device HAL function: Toggle the provided output GPIO
+// Toggle the provided output GPIO
 void ESPRGB::gpio_toggle(const uint8_t gpio)
 {
    gpio_set_level((gpio_num_t)gpio, 1 - (GPIO.out >> gpio & 0x1));
