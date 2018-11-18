@@ -36,6 +36,16 @@ extern "C" {
 
 /**************************************************************************************************/
 
+/* FreeRTOS Tasks Arguments Struct */
+
+typedef struct 
+{
+    Globals* Global;
+    EspRGB* LED_RGB;
+} tasks_argv;
+
+/**************************************************************************************************/
+
 /* Functions */
 
 extern void show_device_info(void);

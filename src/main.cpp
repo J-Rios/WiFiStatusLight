@@ -10,7 +10,7 @@
 /* Libraries */
 
 // Standard C/C++ libraries
-#include <stdio.h>
+//#include <stdio.h>
 
 // FreeRTOS libraries
 #include <freertos/FreeRTOS.h>
@@ -21,6 +21,7 @@
 
 // Custom libraries
 #include "constants.h"
+#include "globals.h"
 #include "commons.h"
 #include "task_wifistatus.h" 
 #include "esprgb.h"
@@ -30,8 +31,8 @@
 /* Functions Prototypes */
 
 extern "C" { void app_main(void); }
-void system_start(ESPRGB* LED_RGB);
-void task_creation(ESPRGB* LED_RGB);
+void system_start(EspRGB* LED_RGB);
+void task_creation(EspRGB* LED_RGB);
 
 /**************************************************************************************************/
 
@@ -40,11 +41,12 @@ void task_creation(ESPRGB* LED_RGB);
 void app_main(void)
 {
     // Elements that will exists during all system live time
-    ESPRGB LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
+    Globals Global();
+    EspRGB LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
 
     // System start and FreeRTOS task creation functions
     system_start(&LED_RGB);
-    task_creation(&LED_RGB);
+    task_creation(&Global, &LED_RGB);
     
     // Keep Main "Task" running to avoid lost local scope data that has been passed to Tasks
     while(1)
@@ -56,7 +58,7 @@ void app_main(void)
 /* Functions */
 
 // Initial system start
-void system_start(ESPRGB* LED_RGB)
+void system_start(EspRGB* LED_RGB)
 {
     debug("\n-------------------------------------------------------------------------------\n");
     debug("\nSystem start.\n\n");
@@ -68,11 +70,16 @@ void system_start(ESPRGB* LED_RGB)
 }
 
 // FreeRTOS Tasks creation
-void task_creation(ESPRGB* LED_RGB)
+void task_creation(Global* Global, EspRGB* LED_RGB)
 {
+    // Prepare parameters to pass
+    tasks_argv task_argv;
+    task_argv.Global = Global;
+    task_argv.LED_RGB = LED_RGB;
+
     // Create Blink Task
     if(xTaskCreate(&task_wifi_status, "task_wifi_status", configMINIMAL_STACK_SIZE+4096, 
-                   (void*)LED_RGB, tskIDLE_PRIORITY+5, NULL) != pdPASS)
+                   (void*)task_argv, tskIDLE_PRIORITY+5, NULL) != pdPASS)
     {
 		debug("\nError when creating wifi status task (not enough memory?)\n");
         debug("Rebooting the system...\n\n");

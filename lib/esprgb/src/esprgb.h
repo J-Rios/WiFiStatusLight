@@ -33,10 +33,10 @@ typedef enum
 
 /**************************************************************************************************/
 
-class ESPRGB
+class EspRGB
 {
     public:
-        ESPRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b);
+        EspRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b);
         void init(void);
         void on(void);
         void off(void);

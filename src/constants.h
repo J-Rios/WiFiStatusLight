@@ -32,7 +32,13 @@
 #define P_O_RGBLED_B GPIO_NUM_14
 
 // Arrays and strings maximum length
+#define MAX_LENGTH_WIFI_SSID 32
+#define MAX_LENGTH_WIFI_PASS 64
 #define MAX_LENGTH_MAC_ADDR  18
+
+// WiFi settings
+#define DEFAULT_WIFI_SSID "MyNet"
+#define DEFAULT_WIFI_PASS "testpassword1423"
 
 /**************************************************************************************************/
 
