@@ -3,7 +3,7 @@
 // File: task_wifistatus.cpp
 // Description: WiFi status FreeRTOS task file
 // Created on: 17 nov. 2018
-// Last modified date: 17 nov. 2018
+// Last modified date: 18 nov. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -35,6 +35,7 @@ extern "C" {
 #include <esp_system.h>
 #include <esp_wifi.h>
 #include <esp_event_loop.h>
+#include <nvs_flash.h>
 
 // Custom libraries
 #include "constants.h"
@@ -48,7 +49,8 @@ extern "C" {
 
 extern void task_wifi_status(void *pvParameter);
 
-extern void wifi_init_stat(char* ssid, char* pass);
+extern void nvs_init(void);
+extern void wifi_init_stat(Globals* Global);
 
 /**************************************************************************************************/
 

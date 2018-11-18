@@ -3,7 +3,7 @@
 // File: globals.h
 // Description: Library to thread-safe access encapsulated globals elements from FreeRTOS Tasks.
 // Created on: 17 nov. 2018
-// Last modified date: 17 nov. 2018
+// Last modified date: 18 nov. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -17,7 +17,7 @@
 /* Libraries */
 
 // Standard C/C++ libraries
-#include <string.h> // memset()
+#include <string.h> // memset(), memcpy()
 #include <stdio.h> // sprintf
 
 // Include SDK and Freertos
@@ -40,6 +40,8 @@ typedef struct
     // Volatile Parameters
     bool wifi_connected;
     bool wifi_has_ip;
+    uint8_t device_mac[MAX_LENGTH_MAC_ADDR+1];
+    char wifi_ip[MAX_LENGTH_IPV4+1];
 } gdata;
 
 /**************************************************************************************************/
@@ -60,6 +62,12 @@ class Globals
 
         bool get_wifi_has_ip(bool& to_get);
         bool set_wifi_has_ip(const bool to_set);
+
+        bool get_device_mac(uint8_t* to_get);
+        bool set_device_mac(const uint8_t* to_set);
+
+        bool get_wifi_ip(char* to_get);
+        bool set_wifi_ip(const char* to_set);
 
     private:
         // Mutex

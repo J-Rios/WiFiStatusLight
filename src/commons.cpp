@@ -3,7 +3,7 @@
 // File: commons.cpp
 // Description: Commons functions file
 // Created on: 17 nov. 2018
-// Last modified date: 17 nov. 2018
+// Last modified date: 18 nov. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -54,39 +54,4 @@ void show_device_info(void)
     }
 
     debug("\n");
-}
-
-// Read device interfaces MAC addresses and show them through serial
-void show_device_macs(void)
-{
-    uint8_t mac_address[MAX_LENGTH_MAC_ADDR+1];
-    esp_err_t rc;
-
-    // Read device MAC for WiFi Station Interface
-    rc = esp_read_mac(mac_address, ESP_MAC_WIFI_STA);
-    if(rc != ESP_OK)
-        debug("Error when reading ESP_MAC_WIFI_STA MAC address - %s\n\n", esp_err_to_name(rc));
-    else
-        debug("WiFi Station MAC: %s\n", mac_address);
-    
-    // Read device MAC for WiFi Software Access Point Interface
-    rc = esp_read_mac(mac_address, ESP_MAC_WIFI_SOFTAP);
-    if(rc != ESP_OK)
-        debug("Error when reading ESP_MAC_WIFI_SOFTAP MAC address - %s\n\n", esp_err_to_name(rc));
-    else
-        debug("WiFi SoftAP MAC: %s\n", mac_address);
-    
-    // Read device MAC for Ethernet Interface
-    rc = esp_read_mac(mac_address, ESP_MAC_ETH);
-    if(rc != ESP_OK)
-        debug("Error when reading ESP_MAC_ETH MAC address - %s\n\n", esp_err_to_name(rc));
-    else
-        debug("Ethernet MAC: %s\n", mac_address);
-    
-    // Read device MAC for Bluetooth Interface
-    rc = esp_read_mac(mac_address, ESP_MAC_BT);
-    if(rc != ESP_OK)
-        debug("Error when reading ESP_MAC_BT MAC address - %s\n\n", esp_err_to_name(rc));
-    else
-        debug("Bluetooth MAC: %s\n", mac_address);
 }

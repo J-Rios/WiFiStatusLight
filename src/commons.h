@@ -3,7 +3,7 @@
 // File: commons.h
 // Description: Commons functions file
 // Created on: 17 nov. 2018
-// Last modified date: 17 nov. 2018
+// Last modified date: 18 nov. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -33,6 +33,18 @@ extern "C" {
 
 // Custom libraries
 #include "constants.h"
+#include "globals.h"
+#include "esprgb.h"
+
+/**************************************************************************************************/
+
+/* Macros */
+
+// Debug macro
+#define debug(...) do { if(DEBUG) printf(__VA_ARGS__); } while (0)
+
+// FreeRTOS to Arduino like delay() macro
+#define delay(x) do { vTaskDelay(x/portTICK_PERIOD_MS); } while(0)
 
 /**************************************************************************************************/
 

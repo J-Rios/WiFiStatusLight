@@ -3,7 +3,7 @@
 // File: globals.h
 // Description: Library to thread-safe access encapsulated globals elements from FreeRTOS Tasks.
 // Created on: 17 nov. 2018
-// Last modified date: 17 nov. 2018
+// Last modified date: 18 nov. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -41,8 +41,14 @@ Globals::Globals(void)
     data.wifi_has_ip = false;
 
     // Arrays data initialization
-    memcpy(data.wifi_ssid, DEFAULT_WIFI_SSID, MAX_LENGTH_WIFI_SSID);
-    memcpy(data.wifi_pass, DEFAULT_WIFI_PASS, MAX_LENGTH_WIFI_PASS);
+    memset(data.wifi_ssid, '\0', MAX_LENGTH_WIFI_SSID+1);
+    memset(data.wifi_pass, '\0', MAX_LENGTH_WIFI_PASS+1);
+    memset(data.device_mac, '\0', MAX_LENGTH_MAC_ADDR+1);
+    memset(data.wifi_ip, '\0', MAX_LENGTH_IPV4+1);
+    memcpy(data.wifi_ssid, DEFAULT_WIFI_SSID, MAX_LENGTH_WIFI_SSID+1);
+    memcpy(data.wifi_pass, DEFAULT_WIFI_PASS, MAX_LENGTH_WIFI_PASS+1);
+    memcpy(data.device_mac, DEFAULT_DEVICE_MAC, MAX_LENGTH_MAC_ADDR+1);
+    memcpy(data.wifi_ip, DEFAULT_DEVICE_IPV4, MAX_LENGTH_IPV4+1);
 }
 
 /**************************************************************************************************/
@@ -96,3 +102,25 @@ bool Globals::set_wifi_has_ip(const bool to_set)
 }
 
 /**************************************************************************************************/
+
+bool Globals::get_device_mac(uint8_t* to_get)
+{
+    SAFE( memcpy(to_get, data.device_mac, MAX_LENGTH_MAC_ADDR+1) );
+}
+
+bool Globals::set_device_mac(const uint8_t* to_set)
+{
+    SAFE( memcpy(data.device_mac, to_set, MAX_LENGTH_MAC_ADDR+1) );
+}
+
+/**************************************************************************************************/
+
+bool Globals::get_wifi_ip(char* to_get)
+{
+    SAFE( memcpy(to_get, data.wifi_ip, MAX_LENGTH_IPV4+1) );
+}
+
+bool Globals::set_wifi_ip(const char* to_set)
+{
+    SAFE( memcpy(data.wifi_ip, to_set, MAX_LENGTH_IPV4+1) );
+}

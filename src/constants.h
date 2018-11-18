@@ -3,7 +3,7 @@
 // File: constants.h
 // Description: Project constants file
 // Created on: 17 nov. 2018
-// Last modified date: 17 nov. 2018
+// Last modified date: 18 nov. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -31,24 +31,21 @@
 #define P_O_RGBLED_G GPIO_NUM_13
 #define P_O_RGBLED_B GPIO_NUM_14
 
+// Tasks Stack size
+#define TASK_WIFI_STATUS_STACK configMINIMAL_STACK_SIZE+2048
+
 // Arrays and strings maximum length
-#define MAX_LENGTH_WIFI_SSID 32
-#define MAX_LENGTH_WIFI_PASS 64
-#define MAX_LENGTH_MAC_ADDR  18
+#define MAX_LENGTH_WIFI_SSID 31
+#define MAX_LENGTH_WIFI_PASS 63
+#define MAX_LENGTH_MAC_ADDR  17
+#define MAX_LENGTH_IPV4      15
 
-// WiFi settings
-#define DEFAULT_WIFI_SSID "MyNet"
-#define DEFAULT_WIFI_PASS "testpassword1423"
-
-/**************************************************************************************************/
-
-/* Macros */
-
-// Debug macro
-#define debug(...) do { if(DEBUG) printf(__VA_ARGS__); } while (0)
-
-// FreeRTOS to Arduino like delay() macro
-#define delay(x) do { vTaskDelay(x/portTICK_PERIOD_MS); } while(0)
+// Default device parameters values
+#define DEFAULT_WIFI_SSID   "MyNet"
+#define DEFAULT_WIFI_PASS   "testpassword1423"
+#define DEFAULT_DEVICE_MAC  "00:00:00:00:00:00"
+#define DEFAULT_DEVICE_IPV4 "0.0.0.0"
+#define MAX_WIFI_CONN_RETRIES 50
 
 /**************************************************************************************************/
 
