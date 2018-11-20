@@ -32,8 +32,7 @@ void task_wifi_status(void *pvParameter)
     // Tur Red the RGB LED
     this_LED_RGB->on(RGB_RED);
 
-    // Initialize NVS and WiFi SoftAP interface
-    nvs_init();
+    // Initialize WiFi SoftAP interface
     wifi_init_stat(Global);
 
     while(1)
@@ -140,17 +139,6 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 /**************************************************************************************************/
 
 /* Functions */
-
-// Initialize Non-Volatile-Storage
-void nvs_init(void)
-{
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-}
 
 void wifi_init_stat(Globals* Global)
 {
