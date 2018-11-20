@@ -18,12 +18,16 @@
 
 // Device libraries (ESP-IDF)
 #include "sdkconfig.h"
+#include <nvs_flash.h>
+
+// Tasks implementations
+#include "task_wifistatus.h" 
+#include "task_ota.h"
 
 // Custom libraries
 #include "constants.h"
 #include "globals.h"
 #include "commons.h"
-#include "task_wifistatus.h" 
 #include "esprgb.h"
 
 /**************************************************************************************************/
@@ -32,6 +36,7 @@
 
 extern "C" { void app_main(void); }
 void system_start(EspRGB* LED_RGB);
+void nvs_init(void);
 void task_creation(Globals* Global, EspRGB* LED_RGB);
 
 /**************************************************************************************************/
@@ -88,12 +93,21 @@ void task_creation(Globals* Global, EspRGB* LED_RGB)
     static tasks_argv task_argv;
     task_argv.Global = Global;
     task_argv.LED_RGB = LED_RGB;
-
-    // Create Blink Task
+    
+    // Create WiFi Status Task
     if(xTaskCreate(&task_wifi_status, "task_wifi_status", TASK_WIFI_STATUS_STACK, (void*)&task_argv,
                    tskIDLE_PRIORITY+5, NULL) != pdPASS)
     {
 		debug("\nError - Can't create WiFi status task (not enough memory?)\n");
+        debug("Rebooting the system...\n\n");
+        esp_restart();
+    }
+
+    // Create OTA Task
+    if(xTaskCreate(&task_ota, "task_ota", TASK_OTA_STACK, (void*)&task_argv,
+                   tskIDLE_PRIORITY+5, NULL) != pdPASS)
+    {
+		debug("\nError - Can't create OTA task (not enough memory?)\n");
         debug("Rebooting the system...\n\n");
         esp_restart();
     }

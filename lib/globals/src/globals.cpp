@@ -15,12 +15,13 @@
 
 /* Globals Access Mutex Macro */
 
+#define MUTEX_INIT() do { this_mutex = xSemaphoreCreateMutex(); } while (0)
 #define SAFE(x) do \
 { \
-    if(xSemaphoreTake(mutex, (portTickType)10)==pdTRUE) \
+    if(xSemaphoreTake(this_mutex, (portTickType)10)==pdTRUE) \
     { \
         x; \
-        xSemaphoreGive(mutex); \
+        xSemaphoreGive(this_mutex); \
         return 1; \
     } \
     return 0; \
@@ -34,11 +35,12 @@
 Globals::Globals(void)
 {
     // Initialize mutex
-	mutex = xSemaphoreCreateMutex();
+	MUTEX_INIT();
 
     // Boolean data initialization
     data.wifi_connected = false;
     data.wifi_has_ip = false;
+    data.ota_update = false;
 
     // Arrays data initialization
     memset(data.wifi_ssid, '\0', MAX_LENGTH_WIFI_SSID+1);
@@ -99,6 +101,18 @@ bool Globals::get_wifi_has_ip(bool& to_get)
 bool Globals::set_wifi_has_ip(const bool to_set)
 {
     SAFE( data.wifi_has_ip = to_set );
+}
+
+/**************************************************************************************************/
+
+bool Globals::get_ota_update(bool& to_get)
+{
+    SAFE( to_get = data.ota_update );
+}
+
+bool Globals::set_ota_update(const bool to_set)
+{
+    SAFE( data.ota_update = to_set );
 }
 
 /**************************************************************************************************/
