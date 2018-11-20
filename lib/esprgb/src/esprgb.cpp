@@ -13,6 +13,25 @@
 
 /**************************************************************************************************/
 
+/* Resource Safe Access Mutex Macro */
+
+#if !FREERTOS_MUTEX
+    #define MUTEX_INIT() do { } while (0)
+    #define MUTEX_SAFE(x) do { x; } while (0)
+#else
+    #define MUTEX_INIT() do { this_mutex = xSemaphoreCreateMutex(); } while (0)
+    #define MUTEX_SAFE(x) do \
+    { \
+        if(xSemaphoreTake(this_mutex, (portTickType)10)==pdTRUE) \
+        { \
+            x; \
+            xSemaphoreGive(this_mutex); \
+        } \
+    } while (0)
+#endif
+
+/**************************************************************************************************/
+
 /* Constructor */
 
 // EspRGB constructor, get the GPIO pins numbers that going to be used for RGB
@@ -21,6 +40,8 @@ EspRGB::EspRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
     this_pin_r = pin_r;
     this_pin_g = pin_g;
     this_pin_b = pin_b;
+
+    MUTEX_INIT();
 }
 
 /**************************************************************************************************/
@@ -30,92 +51,110 @@ EspRGB::EspRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
 // Initialize R, G and B GPIOs as outputs and set them to HIGH (LED off)
 void EspRGB::init(void)
 {
-    gpio_as_output(this_pin_r);
-    gpio_as_output(this_pin_g);
-    gpio_as_output(this_pin_b);
-    gpio_high(this_pin_r);
-    gpio_high(this_pin_g);
-    gpio_high(this_pin_b);
+    MUTEX_SAFE
+    (
+        gpio_as_output(this_pin_r);
+        gpio_as_output(this_pin_g);
+        gpio_as_output(this_pin_b);
+        gpio_high(this_pin_r);
+        gpio_high(this_pin_g);
+        gpio_high(this_pin_b);
+    );
 }
 
 // Turn ON all RGB LED colors
 void EspRGB::on(void)
 {
-    gpio_low(this_pin_r);
-    gpio_low(this_pin_g);
-    gpio_low(this_pin_b);
+    MUTEX_SAFE
+    (
+        gpio_low(this_pin_r);
+        gpio_low(this_pin_g);
+        gpio_low(this_pin_b);
+    );
 }
 
 // Turn OFF all RGB LED colors
 void EspRGB::off(void)
 {
-    gpio_high(this_pin_r);
-    gpio_high(this_pin_g);
-    gpio_high(this_pin_b);
+    MUTEX_SAFE
+    (
+        gpio_high(this_pin_r);
+        gpio_high(this_pin_g);
+        gpio_high(this_pin_b);
+    );
 }
 
 // Turn ON the selected LED color (R, G or B)
 void EspRGB::on(const esprgb_led led, const bool shutdown_others)
 {
-    if(led == RGB_RED)
-        gpio_low(this_pin_r);
-    else if(led == RGB_GREEN)
-        gpio_low(this_pin_g);
-    else if(led == RGB_BLUE)
-        gpio_low(this_pin_b);
-    
-    if(shutdown_others)
-    {
+    MUTEX_SAFE
+    (
         if(led == RGB_RED)
-        {
             gpio_low(this_pin_r);
-            gpio_high(this_pin_g);
-            gpio_high(this_pin_b);
-        }
         else if(led == RGB_GREEN)
-        {
-            gpio_high(this_pin_r);
             gpio_low(this_pin_g);
-            gpio_high(this_pin_b);
-        }
         else if(led == RGB_BLUE)
-        {
-            gpio_high(this_pin_r);
-            gpio_high(this_pin_g);
             gpio_low(this_pin_b);
+        
+        if(shutdown_others)
+        {
+            if(led == RGB_RED)
+            {
+                gpio_low(this_pin_r);
+                gpio_high(this_pin_g);
+                gpio_high(this_pin_b);
+            }
+            else if(led == RGB_GREEN)
+            {
+                gpio_high(this_pin_r);
+                gpio_low(this_pin_g);
+                gpio_high(this_pin_b);
+            }
+            else if(led == RGB_BLUE)
+            {
+                gpio_high(this_pin_r);
+                gpio_high(this_pin_g);
+                gpio_low(this_pin_b);
+            }
         }
-    }
+    );
 }
 
 // Turn OFF the selected LED color (R, G or B)
 void EspRGB::off(const esprgb_led led)
 {
-    if(led == RGB_RED)
-        gpio_high(this_pin_r);
-    else if(led == RGB_GREEN)
-        gpio_high(this_pin_g);
-    else if(led == RGB_BLUE)
-        gpio_high(this_pin_b);
+    MUTEX_SAFE
+    (
+        if(led == RGB_RED)
+            gpio_high(this_pin_r);
+        else if(led == RGB_GREEN)
+            gpio_high(this_pin_g);
+        else if(led == RGB_BLUE)
+            gpio_high(this_pin_b);
+    );
 }
 
 // Toggle the selected LED color (R, G or B) or toggle all
 void EspRGB::toggle(const esprgb_led led, const bool toggle_others)
 {
-    if(!toggle_others)
-    {
-        if(led == RGB_RED)
+    MUTEX_SAFE
+    (
+        if(!toggle_others)
+        {
+            if(led == RGB_RED)
+                gpio_toggle(this_pin_r);
+            else if(led == RGB_GREEN)
+                gpio_toggle(this_pin_g);
+            else if(led == RGB_BLUE)
+                gpio_toggle(this_pin_b);
+        }
+        else
+        {
             gpio_toggle(this_pin_r);
-        else if(led == RGB_GREEN)
             gpio_toggle(this_pin_g);
-        else if(led == RGB_BLUE)
             gpio_toggle(this_pin_b);
-    }
-    else
-    {
-        gpio_toggle(this_pin_r);
-        gpio_toggle(this_pin_g);
-        gpio_toggle(this_pin_b);
-    }
+        }
+    );
 }
 
 /**************************************************************************************************/
@@ -144,5 +183,5 @@ void EspRGB::gpio_high(const uint8_t gpio)
 // Toggle the provided output GPIO
 void EspRGB::gpio_toggle(const uint8_t gpio)
 {
-   gpio_set_level((gpio_num_t)gpio, 1 - (GPIO.out >> gpio & 0x1));
+    gpio_set_level((gpio_num_t)gpio, 1 - (GPIO.out >> gpio & 0x1));
 }

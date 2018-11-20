@@ -14,7 +14,20 @@
 
 /**************************************************************************************************/
 
+/* Defines & Macros */
+
+// Set to true or false to enable/disable FreeRTOS safe use of the RGB LED through multiples Tasks
+#define FREERTOS_MUTEX true
+
+/**************************************************************************************************/
+
 /* Libraries */
+
+#if FREERTOS_MUTEX
+    // Include SDK and Freertos
+    #include <freertos/FreeRTOS.h>
+    #include <freertos/semphr.h>
+#endif
 
 // Device libraries (ESP-IDF)
 #include <driver/gpio.h>
@@ -48,6 +61,9 @@ class EspRGB
         uint8_t this_pin_r;
         uint8_t this_pin_g;
         uint8_t this_pin_b;
+        #if FREERTOS_MUTEX
+            SemaphoreHandle_t this_mutex;
+        #endif
 
         void gpio_as_output(const uint8_t gpio);
         void gpio_low(const uint8_t gpio);
