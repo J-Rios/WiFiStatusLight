@@ -1,9 +1,9 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
-// File: task_wifistatus.cpp
-// Description: WiFi status FreeRTOS task file
-// Created on: 17 nov. 2018
-// Last modified date: 18 nov. 2018
+// File: task_ota.cpp
+// Description: System Over-The-Air (OTA) update through secure HTTPS FreeRTOS task file
+// Created on: 20 nov. 2018
+// Last modified date: 06 dec. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -38,7 +38,7 @@ void task_ota(void *pvParameter)
 
     // Initialize and set Set OTA http client config
     esp_http_client_config_t config;
-    config.cert_pem = (char *)server_cert_pem_start;
+    config.cert_pem = (char*)server_cert_pem_start;
     config.event_handler = _http_event_handler;
     config.url = OTA_HTTPS_SERVER;
 

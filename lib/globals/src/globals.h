@@ -34,6 +34,7 @@
 typedef struct
 {
     // Persistent Parameters
+    char firmware_version[MAX_LENGTH_VERSION+1];
     char wifi_ssid[MAX_LENGTH_WIFI_SSID+1];
     char wifi_pass[MAX_LENGTH_WIFI_PASS+1];
 
@@ -52,6 +53,9 @@ class Globals
     public:
         Globals(void);
 
+        bool get_firmware_version(char* to_get);
+        bool set_firmware_version(const char* to_set);
+        
         bool get_wifi_ssid(char* to_get);
         bool set_wifi_ssid(const char* to_set);
 

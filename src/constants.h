@@ -36,18 +36,22 @@
 #define TASK_OTA_STACK         configMINIMAL_STACK_SIZE+7424
 
 // Arrays and strings maximum length
+#define MAX_LENGTH_VERSION   11
 #define MAX_LENGTH_WIFI_SSID 31
 #define MAX_LENGTH_WIFI_PASS 63
 #define MAX_LENGTH_MAC_ADDR  17
 #define MAX_LENGTH_IPV4      15
 
 // Default device parameters values
-#define DEFAULT_WIFI_SSID     "MyNet"
-#define DEFAULT_WIFI_PASS     "testpassword1423"
-#define DEFAULT_DEVICE_MAC    "00:00:00:00:00:00"
-#define DEFAULT_DEVICE_IPV4   "0.0.0.0"
-#define MAX_WIFI_CONN_RETRIES 50
-#define OTA_HTTPS_SERVER      "https://192.168.0.50:8070/new_firmware.bin"
+#define DEFAULT_WIFI_SSID        "MyNet"
+#define DEFAULT_WIFI_PASS        "testpassword1423"
+#define DEFAULT_DEVICE_MAC       "00:00:00:00:00:00"
+#define DEFAULT_DEVICE_IPV4      "0.0.0.0"
+#define DEFAULT_FIRMWARE_VERSION "0.0.1"
+#define MAX_WIFI_CONN_RETRIES    50
+#define OTA_SERVER               "https://192.168.1.129:4443"
+#define OTA_SERVER_VERSION_FILE  "version.txt"
+#define OTA_SERVER_FIRMWARE_FILE "firmware.bin"
 
 /**************************************************************************************************/
 

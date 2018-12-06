@@ -1,9 +1,9 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
 // File: task_ota.cpp
-// Description: System Over-The-Air (OTA) update through secure https task file
+// Description: System Over-The-Air (OTA) update through secure HTTPS FreeRTOS task file
 // Created on: 20 nov. 2018
-// Last modified date: 20 nov. 2018
+// Last modified date: 06 dec. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -48,16 +48,14 @@ extern "C" {
 
 /* HTTPS Certificates locates in internal Blob memory */
 
-extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
-extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
+extern const uint8_t server_cert_pem_start[] asm("_binary_certs_ca_cert_pem_start");
+extern const uint8_t server_cert_pem_end[] asm("_binary_certs_ca_cert_pem_end");
 
 /**************************************************************************************************/
 
 /* Functions */
 
 extern void task_ota(void *pvParameter);
-
-//extern void wifi_init_stat(Globals* Global);
 
 /**************************************************************************************************/
 

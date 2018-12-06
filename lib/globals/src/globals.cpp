@@ -43,6 +43,7 @@ Globals::Globals(void)
     data.ota_update = false;
 
     // Arrays data initialization
+    snprintf(data.firmware_version, MAX_LENGTH_VERSION+1, "%s", DEFAULT_FIRMWARE_VERSION);
     memset(data.wifi_ssid, '\0', MAX_LENGTH_WIFI_SSID+1);
     memset(data.wifi_pass, '\0', MAX_LENGTH_WIFI_PASS+1);
     memset(data.device_mac, '\0', MAX_LENGTH_MAC_ADDR+1);
@@ -56,6 +57,18 @@ Globals::Globals(void)
 /**************************************************************************************************/
 
 /* Getters and Setters */
+
+bool Globals::get_firmware_version(char* to_get)
+{
+    SAFE( memcpy(to_get, data.firmware_version, MAX_LENGTH_VERSION+1) );
+}
+
+bool Globals::set_firmware_version(const char* to_set)
+{
+    SAFE( memcpy(data.firmware_version, to_set, MAX_LENGTH_VERSION+1) );
+}
+
+/**************************************************************************************************/
 
 bool Globals::get_wifi_ssid(char* to_get)
 {
