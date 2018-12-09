@@ -39,12 +39,10 @@ void task_ota(void *pvParameter)
 
     // Initialize and set Set OTA HTTPS client config (except URL)
     esp_http_client_config_t config;
-    config.host = "192.168.0.130";
     config.port = OTA_SERVER_HTTPS_PORT;
     config.method = HTTP_METHOD_GET;
     config.cert_pem = (const char*)server_cert_pem_start;
     config.transport_type = HTTP_TRANSPORT_OVER_SSL;
-    config.auth_type = HTTP_AUTH_TYPE_NONE;
     config.event_handler = _http_event_handler;
 
     bool ota_update = false;
