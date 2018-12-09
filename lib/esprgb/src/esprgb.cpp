@@ -53,9 +53,9 @@ void EspRGB::init(void)
 {
     MUTEX_SAFE
     (
-        gpio_as_output(this_pin_r);
-        gpio_as_output(this_pin_g);
-        gpio_as_output(this_pin_b);
+        gpio_as_digital_output(this_pin_r);
+        gpio_as_digital_output(this_pin_g);
+        gpio_as_digital_output(this_pin_b);
         gpio_high(this_pin_r);
         gpio_high(this_pin_g);
         gpio_high(this_pin_b);
@@ -162,7 +162,7 @@ void EspRGB::toggle(const esprgb_led led, const bool toggle_others)
 /* Private Methods (Specific device HAL functions) */
 
 // Set the provided GPIO as Output
-void EspRGB::gpio_as_output(const uint8_t gpio)
+void EspRGB::gpio_as_digital_output(const uint8_t gpio)
 {
     gpio_pad_select_gpio((gpio_num_t)gpio);
     gpio_set_direction((gpio_num_t)gpio, GPIO_MODE_OUTPUT);

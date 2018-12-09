@@ -27,20 +27,21 @@
 #define DEBUG true
 
 // I/O pins defines
-#define P_O_RGBLED_R GPIO_NUM_12
-#define P_O_RGBLED_G GPIO_NUM_13
-#define P_O_RGBLED_B GPIO_NUM_14
+#define P_O_RGBLED_R             GPIO_NUM_12
+#define P_O_RGBLED_G             GPIO_NUM_13
+#define P_O_RGBLED_B             GPIO_NUM_14
+#define P_I_BTN_OTA              GPIO_NUM_17
 
 // Tasks Stack size
-#define TASK_WIFI_STATUS_STACK configMINIMAL_STACK_SIZE+2048
-#define TASK_OTA_STACK         configMINIMAL_STACK_SIZE+7424
+#define TASK_WIFI_STATUS_STACK   configMINIMAL_STACK_SIZE+2048
+#define TASK_OTA_STACK           configMINIMAL_STACK_SIZE+7424
 
 // Arrays and strings maximum length
-#define MAX_LENGTH_VERSION   11
-#define MAX_LENGTH_WIFI_SSID 31
-#define MAX_LENGTH_WIFI_PASS 63
-#define MAX_LENGTH_MAC_ADDR  17
-#define MAX_LENGTH_IPV4      15
+#define MAX_LENGTH_VERSION       11
+#define MAX_LENGTH_WIFI_SSID     31
+#define MAX_LENGTH_WIFI_PASS     63
+#define MAX_LENGTH_MAC_ADDR      17
+#define MAX_LENGTH_IPV4          15
 
 // Default device parameters values
 #define DEFAULT_WIFI_SSID        "MyNet"
@@ -48,10 +49,10 @@
 #define DEFAULT_DEVICE_MAC       "00:00:00:00:00:00"
 #define DEFAULT_DEVICE_IPV4      "0.0.0.0"
 #define DEFAULT_FIRMWARE_VERSION "0.0.1"
+#define OTA_SERVER_VERSION_FILE  "https://192.168.0.130/version.txt"
+#define OTA_SERVER_FIRMWARE_FILE "https://192.168.0.130/firmware.bin"
+#define OTA_SERVER_HTTPS_PORT    443
 #define MAX_WIFI_CONN_RETRIES    50
-#define OTA_SERVER               "https://192.168.1.129:4443"
-#define OTA_SERVER_VERSION_FILE  "version.txt"
-#define OTA_SERVER_FIRMWARE_FILE "firmware.bin"
 
 /**************************************************************************************************/
 

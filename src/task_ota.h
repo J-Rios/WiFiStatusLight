@@ -1,10 +1,10 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
 // File: task_ota.cpp
-// Description: System Over-The-Air (OTA) update through secure HTTPS FreeRTOS task file
+// Description: System Over-The-Air (OTA) update, through secure HTTPS, FreeRTOS task file
 // Created on: 20 nov. 2018
-// Last modified date: 06 dec. 2018
-// Version: 0.0.1
+// Last modified date: 09 dec. 2018
+// Version: 1.0.0
 /**************************************************************************************************/
 
 /* Include Guard */
@@ -26,6 +26,8 @@ extern "C" {
 
 // Standard C/C++ libraries
 #include <string.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 
 // FreeRTOS libraries
 #include <freertos/FreeRTOS.h>
@@ -42,20 +44,28 @@ extern "C" {
 #include "constants.h"
 #include "globals.h"
 #include "commons.h"
+#include "buttons.h"
 #include "esprgb.h"
 
 /**************************************************************************************************/
 
 /* HTTPS Certificates locates in internal Blob memory */
 
-extern const uint8_t server_cert_pem_start[] asm("_binary_certs_ca_cert_pem_start");
-extern const uint8_t server_cert_pem_end[] asm("_binary_certs_ca_cert_pem_end");
+extern const uint8_t server_cert_pem_start[] asm("_binary_otawebserver_certs_cert_pem_start");
+extern const uint8_t server_cert_pem_end[] asm("_binary_otawebserver_certs_cert_pem_end");
 
 /**************************************************************************************************/
 
 /* Functions */
 
 extern void task_ota(void *pvParameter);
+
+extern uint8_t get_version_nums_from_str(const char* str, const uint16_t str_len, uint8_t* ver);
+extern uint16_t cstr_count_char(const char* str, const uint16_t str_len, const char c);
+extern int32_t cstr_get_index_char_between(const char* str, const uint16_t str_len, 
+                                     const uint16_t start_from, const char c);
+extern bool cstr_read_between_idx(const char* str, const uint16_t str_len, const uint16_t idx_start,
+                           const uint16_t idx_end, char* readed, const uint16_t readed_len);
 
 /**************************************************************************************************/
 

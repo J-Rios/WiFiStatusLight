@@ -31,7 +31,7 @@
 
 /* Constructor */
 
-// ESPRGB constructor, get the GPIO pins numbers that going to be used for RGB
+// Globals constructor, initialize globals parameters with default values
 Globals::Globals(void)
 {
     // Initialize mutex

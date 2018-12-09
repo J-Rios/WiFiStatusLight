@@ -1,22 +1,22 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
-// File: esprgb.h
-// Description: Library to ease RGB LEDs control.
-// Created on: 16 nov. 2018
-// Last modified date: 16 nov. 2018
+// File: buttons.h
+// Description: HAL library to ease Buttons control.
+// Created on: 06 dec. 2018
+// Last modified date: 06 dec. 2018
 // Version: 1.0.0
 /**************************************************************************************************/
 
 /* Include Guard */
 
-#ifndef ESPRGB_H_
-#define ESPRGB_H_
+#ifndef BUTTONS_H_
+#define BUTTONS_H_
 
 /**************************************************************************************************/
 
 /* Defines & Macros */
 
-// Set to true or false to enable/disable FreeRTOS safe use of the RGB LED through multiples Tasks
+// Set to true or false to enable/disable FreeRTOS safe use of the input pin through multiples Tasks
 #define FREERTOS_MUTEX true
 
 /**************************************************************************************************/
@@ -39,36 +39,28 @@
 // RGB LED component data type
 typedef enum
 {
-    RGB_RED   = 0,
-    RGB_GREEN = 1,
-    RGB_BLUE  = 2,
-} esprgb_led;
+    NORMAL   = 0,
+    PULLUP = 1,
+    PULLDOWN  = 2,
+} gpi_mode;
 
 /**************************************************************************************************/
 
-class EspRGB
+class Buttons
 {
     public:
-        EspRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b);
-        void init(void);
-        void on(void);
-        void off(void);
-        void on(const esprgb_led led, const bool shutdown_others=true);
-        void off(const esprgb_led led);
-        void toggle(const esprgb_led led, const bool toggle_others=false);
+        Buttons(const uint8_t pin);
+        void mode(const gpi_mode mode=NORMAL);
+        uint8_t read(void);
 
     private:
-        uint8_t this_pin_r;
-        uint8_t this_pin_g;
-        uint8_t this_pin_b;
+        uint8_t this_pin;
         #if FREERTOS_MUTEX
             SemaphoreHandle_t this_mutex;
         #endif
 
-        void gpio_as_digital_output(const uint8_t gpio);
-        void gpio_low(const uint8_t gpio);
-        void gpio_high(const uint8_t gpio);
-        void gpio_toggle(const uint8_t gpio);
+        void gpio_as_digital_input(const uint8_t gpio, const gpi_mode mode);
+        uint8_t gpio_digital_read(const uint8_t gpio);
 };
 
 /**************************************************************************************************/

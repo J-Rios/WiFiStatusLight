@@ -34,6 +34,7 @@ extern "C" {
 // Custom libraries
 #include "constants.h"
 #include "globals.h"
+#include "buttons.h"
 #include "esprgb.h"
 
 /**************************************************************************************************/
@@ -53,6 +54,7 @@ extern "C" {
 typedef struct 
 {
     Globals* Global;
+    Buttons* Btn_OTA_Update;
     EspRGB* LED_RGB;
 } tasks_argv;
 
