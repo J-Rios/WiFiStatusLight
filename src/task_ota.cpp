@@ -32,7 +32,7 @@ void task_ota(void *pvParameter)
     tasks_argv* task_argv = (tasks_argv*)pvParameter;
     Globals* Global = task_argv->Global;
     Buttons* Btn_OTA_Update = task_argv->Btn_OTA_Update;
-    //EspRGB* this_LED_RGB = task_argv->LED_RGB;
+    EspRGB* LED_RGB = task_argv->LED_RGB;
 
     memset(https_received_data, '\0', 512);
     
@@ -41,7 +41,6 @@ void task_ota(void *pvParameter)
     // Initialize and set Set OTA HTTPS client config (except URL)
     esp_http_client_config_t config;
     config.port = OTA_SERVER_HTTPS_PORT;
-    //config.method = HTTP_METHOD_GET;
     config.cert_pem = (const char*)server_cert_pem_start;
     config.transport_type = HTTP_TRANSPORT_OVER_SSL;
 
@@ -163,9 +162,12 @@ void task_ota(void *pvParameter)
 
                 if(new_firmware)
                 {
-                    printf("Updating firmware to last version through OTA...\n");
+                    printf("Updating firmware to last version, please wait...\n");
                     config.url = OTA_SERVER_FIRMWARE_FILE;
                     config.event_handler = _http_ota_update_event_handler;
+
+                    // Show OTA updating status through RGB LED
+                    LED_RGB->on(RGB_RED, false);
 
                     // Connect to the Server that has the OTA firmware and download-flash it
                     esp_err_t ret = esp_https_ota(&config);
@@ -182,6 +184,8 @@ void task_ota(void *pvParameter)
                             debug("Not enough memory available for OTA download.");
                         else
                             ESP_ERROR_CHECK(ret);
+                        
+                        LED_RGB->off(RGB_RED);
                     }
                 }
             }

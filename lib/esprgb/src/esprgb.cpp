@@ -3,8 +3,8 @@
 // File: esprgb.cpp
 // Description: Library to ease RGB LEDs control.
 // Created on: 16 nov. 2018
-// Last modified date: 16 nov. 2018
-// Version: 1.0.0
+// Last modified date: 10 dec. 2018
+// Version: 1.0.1
 /**************************************************************************************************/
 
 /* Libraries */
@@ -40,6 +40,9 @@ EspRGB::EspRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
     this_pin_r = pin_r;
     this_pin_g = pin_g;
     this_pin_b = pin_b;
+    red_is_on = false;
+    green_is_on = false;
+    blue_is_on = false;
 
     MUTEX_INIT();
 }
@@ -59,6 +62,9 @@ void EspRGB::init(void)
         gpio_high(this_pin_r);
         gpio_high(this_pin_g);
         gpio_high(this_pin_b);
+        red_is_on = false;
+        green_is_on = false;
+        blue_is_on = false;
     );
 }
 
@@ -70,6 +76,9 @@ void EspRGB::on(void)
         gpio_low(this_pin_r);
         gpio_low(this_pin_g);
         gpio_low(this_pin_b);
+        red_is_on = true;
+        green_is_on = true;
+        blue_is_on = true;
     );
 }
 
@@ -81,6 +90,9 @@ void EspRGB::off(void)
         gpio_high(this_pin_r);
         gpio_high(this_pin_g);
         gpio_high(this_pin_b);
+        red_is_on = false;
+        green_is_on = false;
+        blue_is_on = false;
     );
 }
 
@@ -89,32 +101,64 @@ void EspRGB::on(const esprgb_led led, const bool shutdown_others)
 {
     MUTEX_SAFE
     (
-        if(led == RGB_RED)
-            gpio_low(this_pin_r);
-        else if(led == RGB_GREEN)
-            gpio_low(this_pin_g);
-        else if(led == RGB_BLUE)
-            gpio_low(this_pin_b);
-        
-        if(shutdown_others)
+        // Do nothing if the provided LED is already on
+        bool do_nothing = false;
+        if((led == RGB_RED) && (red_is_on))
+            do_nothing = true;
+        if((led == RGB_GREEN) && (green_is_on))
+            do_nothing = true;
+        if((led == RGB_BLUE) && (blue_is_on))
+            do_nothing = true;
+
+        if(!do_nothing)
         {
-            if(led == RGB_RED)
+            if(!shutdown_others)
             {
-                gpio_low(this_pin_r);
-                gpio_high(this_pin_g);
-                gpio_high(this_pin_b);
+                if(led == RGB_RED)
+                {
+                    gpio_low(this_pin_r);
+                    red_is_on = true;
+                }
+                else if(led == RGB_GREEN)
+                {
+                    gpio_low(this_pin_g);
+                    green_is_on = true;
+                }
+                else if(led == RGB_BLUE)
+                {
+                    gpio_low(this_pin_b);
+                    blue_is_on = true;
+                }
             }
-            else if(led == RGB_GREEN)
+            else
             {
-                gpio_high(this_pin_r);
-                gpio_low(this_pin_g);
-                gpio_high(this_pin_b);
-            }
-            else if(led == RGB_BLUE)
-            {
-                gpio_high(this_pin_r);
-                gpio_high(this_pin_g);
-                gpio_low(this_pin_b);
+                if(led == RGB_RED)
+                {
+                    gpio_low(this_pin_r);
+                    gpio_high(this_pin_g);
+                    gpio_high(this_pin_b);
+                    red_is_on = true;
+                    green_is_on = false;
+                    blue_is_on = false;
+                }
+                else if(led == RGB_GREEN)
+                {
+                    gpio_high(this_pin_r);
+                    gpio_low(this_pin_g);
+                    gpio_high(this_pin_b);
+                    red_is_on = false;
+                    green_is_on = true;
+                    blue_is_on = false;
+                }
+                else if(led == RGB_BLUE)
+                {
+                    gpio_high(this_pin_r);
+                    gpio_high(this_pin_g);
+                    gpio_low(this_pin_b);
+                    red_is_on = false;
+                    green_is_on = false;
+                    blue_is_on = true;
+                }
             }
         }
     );
@@ -122,15 +166,36 @@ void EspRGB::on(const esprgb_led led, const bool shutdown_others)
 
 // Turn OFF the selected LED color (R, G or B)
 void EspRGB::off(const esprgb_led led)
-{
+{    
     MUTEX_SAFE
     (
-        if(led == RGB_RED)
-            gpio_high(this_pin_r);
-        else if(led == RGB_GREEN)
-            gpio_high(this_pin_g);
-        else if(led == RGB_BLUE)
-            gpio_high(this_pin_b);
+        // Do nothing if the provided LED is already off
+        bool do_nothing = false;
+        if((led == RGB_RED) && (!red_is_on))
+            do_nothing = true;
+        if((led == RGB_GREEN) && (!green_is_on))
+            do_nothing = true;
+        if((led == RGB_BLUE) && (!blue_is_on))
+            do_nothing = true;
+        
+        if(!do_nothing)
+        {
+            if(led == RGB_RED)
+            {
+                gpio_high(this_pin_r);
+                red_is_on = false;
+            }
+            else if(led == RGB_GREEN)
+            {
+                gpio_high(this_pin_g);
+                green_is_on = false;
+            }
+            else if(led == RGB_BLUE)
+            {
+                gpio_high(this_pin_b);
+                blue_is_on = false;
+            }
+        }
     );
 }
 
@@ -142,17 +207,29 @@ void EspRGB::toggle(const esprgb_led led, const bool toggle_others)
         if(!toggle_others)
         {
             if(led == RGB_RED)
+            {
                 gpio_toggle(this_pin_r);
+                red_is_on = !red_is_on;
+            }
             else if(led == RGB_GREEN)
+            {
                 gpio_toggle(this_pin_g);
+                green_is_on = !green_is_on;
+            }
             else if(led == RGB_BLUE)
+            {
                 gpio_toggle(this_pin_b);
+                blue_is_on = !blue_is_on;
+            }
         }
         else
         {
             gpio_toggle(this_pin_r);
             gpio_toggle(this_pin_g);
             gpio_toggle(this_pin_b);
+            red_is_on = !red_is_on;
+            green_is_on = !green_is_on;
+            blue_is_on = !blue_is_on;
         }
     );
 }

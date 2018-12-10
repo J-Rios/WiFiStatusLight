@@ -25,12 +25,12 @@ void task_wifi_status(void *pvParameter)
     // Get provided parameters
     tasks_argv* task_argv = (tasks_argv*)pvParameter;
     Globals* Global = task_argv->Global;
-    EspRGB* this_LED_RGB = task_argv->LED_RGB;
+    EspRGB* LED_RGB = task_argv->LED_RGB;
 
     debug("\nWiFi status task initialized.\n");
 
     // Tur Red the RGB LED
-    this_LED_RGB->on(RGB_RED);
+    LED_RGB->on(RGB_RED);
 
     // Initialize WiFi SoftAP interface
     wifi_init_stat(Global);
@@ -43,11 +43,11 @@ void task_wifi_status(void *pvParameter)
 
         // Show the actual WiFi status using the RGB LED
         if(!wifi_connected && !wifi_has_ip)
-            this_LED_RGB->on(RGB_RED);
+            LED_RGB->on(RGB_RED);
         else if(wifi_connected && !wifi_has_ip)
-            this_LED_RGB->on(RGB_GREEN);
+            LED_RGB->on(RGB_GREEN);
         else if(wifi_connected && wifi_has_ip)
-            this_LED_RGB->on(RGB_BLUE);
+            LED_RGB->on(RGB_BLUE);
 
         // Task CPU release
         delay(100);
