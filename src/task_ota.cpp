@@ -185,7 +185,10 @@ void task_ota(void *pvParameter)
                         else
                             ESP_ERROR_CHECK(ret);
                         
-                        LED_RGB->off(RGB_RED);
+                        // Just turn Red to off, if the error is not from lost network connection
+                        Global->get_wifi_connected(wifi_connected);
+                        if(wifi_connected)
+                            LED_RGB->off(RGB_RED);
                     }
                 }
             }
