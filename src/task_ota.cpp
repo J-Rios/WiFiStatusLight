@@ -15,7 +15,8 @@
 
 /* OTA Events Handler Prototype */
 
-static esp_err_t _http_event_handler(esp_http_client_event_t *evt);
+static esp_err_t _http_check_version_event_handler(esp_http_client_event_t *evt);
+static esp_err_t _http_ota_update_event_handler(esp_http_client_event_t *evt);
 
 char https_received_data[512];
 
@@ -40,10 +41,9 @@ void task_ota(void *pvParameter)
     // Initialize and set Set OTA HTTPS client config (except URL)
     esp_http_client_config_t config;
     config.port = OTA_SERVER_HTTPS_PORT;
-    config.method = HTTP_METHOD_GET;
+    //config.method = HTTP_METHOD_GET;
     config.cert_pem = (const char*)server_cert_pem_start;
     config.transport_type = HTTP_TRANSPORT_OVER_SSL;
-    config.event_handler = _http_event_handler;
 
     bool ota_update = false;
     uint32_t num_iterations = 0;
@@ -90,6 +90,7 @@ void task_ota(void *pvParameter)
                 // Connect to the Server that has OTA last firmware version file
                 debug("Checking last firmware version in the server...\n");
                 config.url = OTA_SERVER_VERSION_FILE;
+                config.event_handler = _http_check_version_event_handler;
                 debug("Connecting to %s...\n", config.url);
                 esp_http_client_handle_t client = esp_http_client_init(&config);
                 esp_err_t ret = esp_http_client_perform(client);
@@ -162,8 +163,9 @@ void task_ota(void *pvParameter)
 
                 if(new_firmware)
                 {
-                    printf("Trying to update through OTA...\n");
+                    printf("Updating firmware to last version through OTA...\n");
                     config.url = OTA_SERVER_FIRMWARE_FILE;
+                    config.event_handler = _http_ota_update_event_handler;
 
                     // Connect to the Server that has the OTA firmware and download-flash it
                     esp_err_t ret = esp_https_ota(&config);
@@ -175,7 +177,7 @@ void task_ota(void *pvParameter)
                     }
                     else
                     {
-                        debug("Firmware Upgrades Failed.\n");
+                        debug("Firmware upgrade fail.\n");
                         if(ret == ESP_ERR_NO_MEM)
                             debug("Not enough memory available for OTA download.");
                         else
@@ -202,7 +204,7 @@ void task_ota(void *pvParameter)
 
 /* OTA Events Handler */
 
-static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
+static esp_err_t _http_check_version_event_handler(esp_http_client_event_t *evt)
 {
     switch(evt->event_id)
     {
@@ -238,7 +240,28 @@ static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
             debug("HTTP/S Disconnected.\n");
             break;
     }
+    return ESP_OK;
+}
 
+static esp_err_t _http_ota_update_event_handler(esp_http_client_event_t *evt)
+{
+    switch(evt->event_id)
+    {
+        case HTTP_EVENT_ERROR:
+            break;
+        case HTTP_EVENT_ON_CONNECTED:
+            break;
+        case HTTP_EVENT_HEADER_SENT:
+            break;
+        case HTTP_EVENT_ON_HEADER:
+            break;
+        case HTTP_EVENT_ON_DATA:
+            break;
+        case HTTP_EVENT_ON_FINISH:
+            break;
+        case HTTP_EVENT_DISCONNECTED:
+            break;
+    }
     return ESP_OK;
 }
 
