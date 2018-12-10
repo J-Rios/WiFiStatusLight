@@ -1,6 +1,6 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
-// File: esprgb.cpp
+// File: rgbleds.cpp
 // Description: Library to ease RGB LEDs control.
 // Created on: 16 nov. 2018
 // Last modified date: 10 dec. 2018
@@ -9,7 +9,7 @@
 
 /* Libraries */
 
-#include "esprgb.h"
+#include "rgbleds.h"
 
 /**************************************************************************************************/
 
@@ -34,8 +34,8 @@
 
 /* Constructor */
 
-// EspRGB constructor, get the GPIO pins numbers that going to be used for RGB
-EspRGB::EspRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
+// RGBLEDs constructor, get the GPIO pins numbers that going to be used for RGB
+RGBLEDs::RGBLEDs(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
 {
     this_pin_r = pin_r;
     this_pin_g = pin_g;
@@ -52,7 +52,7 @@ EspRGB::EspRGB(const uint8_t pin_r, const uint8_t pin_g, const uint8_t pin_b)
 /* Public Methods */
 
 // Initialize R, G and B GPIOs as outputs and set them to HIGH (LED off)
-void EspRGB::init(void)
+void RGBLEDs::init(void)
 {
     MUTEX_SAFE
     (
@@ -69,7 +69,7 @@ void EspRGB::init(void)
 }
 
 // Turn ON all RGB LED colors
-void EspRGB::on(void)
+void RGBLEDs::on(void)
 {
     MUTEX_SAFE
     (
@@ -83,7 +83,7 @@ void EspRGB::on(void)
 }
 
 // Turn OFF all RGB LED colors
-void EspRGB::off(void)
+void RGBLEDs::off(void)
 {
     MUTEX_SAFE
     (
@@ -97,7 +97,7 @@ void EspRGB::off(void)
 }
 
 // Turn ON the selected LED color (R, G or B)
-void EspRGB::on(const esprgb_led led, const bool shutdown_others)
+void RGBLEDs::on(const rgbleds_led led, const bool shutdown_others)
 {
     MUTEX_SAFE
     (
@@ -165,7 +165,7 @@ void EspRGB::on(const esprgb_led led, const bool shutdown_others)
 }
 
 // Turn OFF the selected LED color (R, G or B)
-void EspRGB::off(const esprgb_led led)
+void RGBLEDs::off(const rgbleds_led led)
 {    
     MUTEX_SAFE
     (
@@ -200,7 +200,7 @@ void EspRGB::off(const esprgb_led led)
 }
 
 // Toggle the selected LED color (R, G or B) or toggle all
-void EspRGB::toggle(const esprgb_led led, const bool toggle_others)
+void RGBLEDs::toggle(const rgbleds_led led, const bool toggle_others)
 {
     MUTEX_SAFE
     (
@@ -239,26 +239,26 @@ void EspRGB::toggle(const esprgb_led led, const bool toggle_others)
 /* Private Methods (Specific device HAL functions) */
 
 // Set the provided GPIO as Output
-void EspRGB::gpio_as_digital_output(const uint8_t gpio)
+void RGBLEDs::gpio_as_digital_output(const uint8_t gpio)
 {
     gpio_pad_select_gpio((gpio_num_t)gpio);
     gpio_set_direction((gpio_num_t)gpio, GPIO_MODE_OUTPUT);
 }
 
 // Set the provided output GPIO to LOW
-void EspRGB::gpio_low(const uint8_t gpio)
+void RGBLEDs::gpio_low(const uint8_t gpio)
 {
     gpio_set_level((gpio_num_t)gpio, 0);
 }
 
 // Set the provided output GPIO to LOW
-void EspRGB::gpio_high(const uint8_t gpio)
+void RGBLEDs::gpio_high(const uint8_t gpio)
 {
     gpio_set_level((gpio_num_t)gpio, 1);
 }
 
 // Toggle the provided output GPIO
-void EspRGB::gpio_toggle(const uint8_t gpio)
+void RGBLEDs::gpio_toggle(const uint8_t gpio)
 {
     gpio_set_level((gpio_num_t)gpio, 1 - (GPIO.out >> gpio & 0x1));
 }

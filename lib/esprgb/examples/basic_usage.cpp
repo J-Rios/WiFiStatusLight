@@ -1,6 +1,6 @@
 /**************************************************************************************************/
 // File: basic_usage.cpp
-// Description: ESPRGB library basic usage example
+// Description: RGBLEDs library basic usage example
 // Created on: 16 nov. 2018
 // Last modified date: 16 nov. 2018
 // Version: 1.0.0
@@ -19,7 +19,7 @@
 #include "sdkconfig.h"
 
 // Custom libraries
-#include "esprgb.h"
+#include "rgbleds.h"
 
 /**************************************************************************************************/
 
@@ -46,7 +46,7 @@ extern "C" { void app_main(void); }
 
 void app_main(void)
 {
-    ESPRGB LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
+    RGBLEDs LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
 
     LED_RGB.init();
 

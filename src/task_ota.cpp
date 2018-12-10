@@ -32,7 +32,7 @@ void task_ota(void *pvParameter)
     tasks_argv* task_argv = (tasks_argv*)pvParameter;
     Globals* Global = task_argv->Global;
     Buttons* Btn_OTA_Update = task_argv->Btn_OTA_Update;
-    EspRGB* LED_RGB = task_argv->LED_RGB;
+    RGBLEDs* LED_RGB = task_argv->LED_RGB;
 
     memset(https_received_data, '\0', 512);
     

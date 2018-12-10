@@ -25,7 +25,7 @@ void task_wifi_status(void *pvParameter)
     // Get provided parameters
     tasks_argv* task_argv = (tasks_argv*)pvParameter;
     Globals* Global = task_argv->Global;
-    EspRGB* LED_RGB = task_argv->LED_RGB;
+    RGBLEDs* LED_RGB = task_argv->LED_RGB;
 
     debug("\nWiFi status task initialized.\n");
 

@@ -5,6 +5,6 @@
     },
     "files.associations": {
         "task_wifistatus.h": "c",
-        "esprgb.h": "c"
+        "rgbleds.h": "c"
     }
 }

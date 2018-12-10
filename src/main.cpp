@@ -29,16 +29,16 @@
 #include "globals.h"
 #include "commons.h"
 #include "buttons.h"
-#include "esprgb.h"
+#include "rgbleds.h"
 
 /**************************************************************************************************/
 
 /* Functions Prototypes */
 
 extern "C" { void app_main(void); }
-void system_start(Globals* Global, Buttons* Btn_OTA_Update, EspRGB* LED_RGB);
+void system_start(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB);
 void nvs_init(void);
-void task_creation(Globals* Global, Buttons* Btn_OTA_Update, EspRGB* LED_RGB);
+void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB);
 
 /**************************************************************************************************/
 
@@ -49,7 +49,7 @@ void app_main(void)
     // Elements that will exists during all system live time
     Globals Global;
     Buttons Btn_OTA_Update(P_I_BTN_OTA);
-    EspRGB LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
+    RGBLEDs LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
 
     // System start and FreeRTOS task creation functions
     system_start(&Global, &Btn_OTA_Update, &LED_RGB);
@@ -65,7 +65,7 @@ void app_main(void)
 /* Functions */
 
 // Initial system start
-void system_start(Globals* Global, Buttons* Btn_OTA_Update, EspRGB* LED_RGB)
+void system_start(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB)
 {
     debug("\n-------------------------------------------------------------------------------\n");
     debug("\nSystem start.\n\n");
@@ -97,7 +97,7 @@ void nvs_init(void)
 }
 
 // FreeRTOS Tasks creation
-void task_creation(Globals* Global, Buttons* Btn_OTA_Update, EspRGB* LED_RGB)
+void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB)
 {
     // Prepare parameters to pass
     static tasks_argv task_argv;
