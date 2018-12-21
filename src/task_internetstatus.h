@@ -27,14 +27,11 @@ extern "C" {
 // Standard C/C++ libraries
 #include <string.h>
 
-// FreeRTOS libraries
-//#include <freertos/FreeRTOS.h>
-//#include <freertos/event_groups.h>
-
 // Device libraries (ESP-IDF)
-/*#include <esp_system.h>
-#include <esp_wifi.h>
-#include <esp_event_loop.h>*/
+//#include <lwip/netif.h>
+#include <lwip/sockets.h>
+#include <ping.h>
+#include <esp_ping.h>
 
 // Custom libraries
 #include "constants.h"
@@ -46,6 +43,10 @@ extern "C" {
 /* Functions */
 
 extern void task_internet_status(void *pvParameter);
+
+extern void ping_setup(void);
+extern void ping_run(const char* ip_address);
+extern esp_err_t pingResults(ping_target_id_t msg_type, esp_ping_found* found);
 
 /**************************************************************************************************/
 

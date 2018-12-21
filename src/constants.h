@@ -3,7 +3,7 @@
 // File: constants.h
 // Description: Project constants file
 // Created on: 17 nov. 2018
-// Last modified date: 18 nov. 2018
+// Last modified date: 21 dec. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -24,7 +24,7 @@
 /* Commons Defines & Constants */
 
 // Set DEBUG to true or false to enable/disable printf() debugging statement
-#define DEBUG true
+#define DEBUG                    true
 
 // I/O pins defines
 #define P_O_RGBLED_R             GPIO_NUM_25
@@ -66,9 +66,14 @@
 
 /* Task Internet Status Defines & Constants */
 
-// Internet remote server to ping and time between each Internet status checks (30s)
-#define CHECK_INTERNET_URL       "8.8.8.8"
-#define T_INTERNET_CHECK         30000
+// Ping remote server and properties
+#define PING_TO_URL              "8.8.8.8"
+const uint32_t PING_NUM_SENT   = 4;
+const uint32_t PING_TIMEOUT_MS = 5000;
+const uint32_t PING_DELAY_MS   = 500;
+
+// Time between each Internet status checks (30s)
+#define T_INTERNET_CHECKS        30000
 
 /**************************************************************************************************/
 
