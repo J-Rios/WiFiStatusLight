@@ -21,7 +21,7 @@
 
 /**************************************************************************************************/
 
-/* Defines & Constants */
+/* Commons Defines & Constants */
 
 // Set DEBUG to true or false to enable/disable printf() debugging statement
 #define DEBUG true
@@ -34,6 +34,7 @@
 
 // Tasks Stack size
 #define TASK_WIFI_STATUS_STACK   configMINIMAL_STACK_SIZE+2048
+#define TASK_INTERNET_STACK      configMINIMAL_STACK_SIZE+2048
 #define TASK_OTA_STACK           configMINIMAL_STACK_SIZE+7424
 
 // Arrays and strings maximum length
@@ -49,10 +50,25 @@
 #define DEFAULT_DEVICE_MAC       "00:00:00:00:00:00"
 #define DEFAULT_DEVICE_IPV4      "0.0.0.0"
 #define DEFAULT_FIRMWARE_VERSION "0.0.1"
+#define MAX_WIFI_CONN_RETRIES    50
+
+/**************************************************************************************************/
+
+/* Task OTA Defines & Constants */
+
+// Over The Air Server last version file and firmware, and server connecton port
 #define OTA_SERVER_VERSION_FILE  "https://192.168.0.130/version.txt"
 #define OTA_SERVER_FIRMWARE_FILE "https://192.168.0.130/firmware.bin"
 #define OTA_SERVER_HTTPS_PORT    443
-#define MAX_WIFI_CONN_RETRIES    50
+
+
+/**************************************************************************************************/
+
+/* Task Internet Status Defines & Constants */
+
+// Internet remote server to ping and time between each Internet status checks (30s)
+#define CHECK_INTERNET_URL       "8.8.8.8"
+#define T_INTERNET_CHECK         30000
 
 /**************************************************************************************************/
 

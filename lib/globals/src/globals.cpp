@@ -35,11 +35,12 @@
 Globals::Globals(void)
 {
     // Initialize mutex
-	MUTEX_INIT();
+    MUTEX_INIT();
 
     // Boolean data initialization
     data.wifi_connected = false;
     data.wifi_has_ip = false;
+    data.internet_connection = false;
     data.ota_update = false;
 
     // Arrays data initialization
@@ -114,6 +115,18 @@ bool Globals::get_wifi_has_ip(bool& to_get)
 bool Globals::set_wifi_has_ip(const bool to_set)
 {
     SAFE( data.wifi_has_ip = to_set );
+}
+
+/**************************************************************************************************/
+
+bool Globals::get_internet_connection(bool& to_get)
+{
+    SAFE( to_get = data.internet_connection );
+}
+
+bool Globals::set_internet_connection(const bool to_set)
+{
+    SAFE( data.internet_connection = to_set );
 }
 
 /**************************************************************************************************/

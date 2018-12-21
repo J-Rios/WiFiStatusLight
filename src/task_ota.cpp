@@ -109,11 +109,11 @@ void task_ota(void *pvParameter)
                                                      actual_version_digits) == 0)
                         {
                             debug("Device actual firmware version: %d.%d.%d\n", 
-                              actual_version_digits[0], actual_version_digits[1],
-                              actual_version_digits[2]);
+                                  actual_version_digits[0], actual_version_digits[1],
+                                  actual_version_digits[2]);
                             debug("Firmware version in server: %d.%d.%d\n", 
-                              last_server_version_digits[0], last_server_version_digits[1],
-                              last_server_version_digits[2]);
+                                  last_server_version_digits[0], last_server_version_digits[1],
+                                  last_server_version_digits[2]);
                             
                             // Check if device version is low or equal to server firmware version
                             bool already_in_last_ver = false;
@@ -139,7 +139,7 @@ void task_ota(void *pvParameter)
                             {
                                 if(already_in_last_ver)
                                     debug("Device firmware version is the lastest one, there is " \
-                                        "nothing to update.\n");
+                                          "nothing to update.\n");
                                 else
                                     debug("Device firmware version is newer than server one!!!\n");
                             }
@@ -334,7 +334,7 @@ uint16_t cstr_count_char(const char* str, const uint16_t str_len, const char c)
 // Get the first given character appearance index position for the provided string from a start 
 // index position
 int32_t cstr_get_index_char_between(const char* str, const uint16_t str_len, 
-                                     const uint16_t start_from, const char c)
+                                    const uint16_t start_from, const char c)
 {
     int32_t pos = -1;
 

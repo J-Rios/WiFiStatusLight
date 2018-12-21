@@ -63,9 +63,9 @@ extern void task_ota(void *pvParameter);
 extern uint8_t get_version_nums_from_str(const char* str, const uint16_t str_len, uint8_t* ver);
 extern uint16_t cstr_count_char(const char* str, const uint16_t str_len, const char c);
 extern int32_t cstr_get_index_char_between(const char* str, const uint16_t str_len, 
-                                     const uint16_t start_from, const char c);
+                                           const uint16_t start_from, const char c);
 extern bool cstr_read_between_idx(const char* str, const uint16_t str_len, const uint16_t idx_start,
-                           const uint16_t idx_end, char* readed, const uint16_t readed_len);
+                                  const uint16_t idx_end, char* readed, const uint16_t readed_len);
 
 /**************************************************************************************************/
 

@@ -77,20 +77,20 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
             break;
 
         case SYSTEM_EVENT_STA_CONNECTED:
-			debug("WiFi connected.\n");
+            debug("WiFi connected.\n");
             debug("Waiting for IP...\n");
             Global->set_wifi_connected(true);
-			break;
+            break;
 
         case SYSTEM_EVENT_STA_GOT_IP:
             Global->set_wifi_ip(ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
             Global->get_wifi_ip(ip);
-			debug("WiFi IPv4 received: %s\n", ip);
+            debug("WiFi IPv4 received: %s\n", ip);
             Global->set_wifi_has_ip(true);
             break;
 
         case SYSTEM_EVENT_STA_LOST_IP:
-			debug("WiFi IP lost.\n");
+            debug("WiFi IP lost.\n");
             Global->set_wifi_ip(DEFAULT_DEVICE_IPV4);
             Global->set_wifi_has_ip(false);
             break;
@@ -122,15 +122,15 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
             break;
 
         case SYSTEM_EVENT_STA_STOP:
-			debug("WiFi interface stopped\n");
+            debug("WiFi interface stopped\n");
             conn_fail_retries = 0;
             Global->set_wifi_ip(DEFAULT_DEVICE_IPV4);
             Global->set_wifi_has_ip(false);
-			Global->set_wifi_connected(false);
-			break;
+            Global->set_wifi_connected(false);
+            break;
 
-		default:
-			break;
+        default:
+            break;
     }
     
     return ESP_OK;

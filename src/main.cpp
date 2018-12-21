@@ -21,7 +21,8 @@
 #include <nvs_flash.h>
 
 // Tasks implementations
-#include "task_wifistatus.h" 
+#include "task_wifistatus.h"
+#include "task_internetstatus.h"
 #include "task_ota.h"
 
 // Custom libraries
@@ -106,19 +107,28 @@ void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB)
     task_argv.LED_RGB = LED_RGB;
     
     // Create WiFi Status Task
-    if(xTaskCreate(&task_wifi_status, "task_wifi_status", TASK_WIFI_STATUS_STACK, (void*)&task_argv,
-                   tskIDLE_PRIORITY+5, NULL) != pdPASS)
+    if(xTaskCreate(&task_wifi_status, "task_wifi_status", TASK_WIFI_STATUS_STACK, 
+                   (void*)&task_argv, tskIDLE_PRIORITY+5, NULL) != pdPASS)
     {
-		debug("\nError - Can't create WiFi status task (not enough memory?)\n");
+        debug("\nError - Can't create WiFi status task (not enough memory?)\n");
+        debug("Rebooting the system...\n\n");
+        esp_restart();
+    }
+
+    // Create Internet Status Task
+    if(xTaskCreate(&task_internet_status, "task_internet_status", TASK_INTERNET_STACK, 
+                   (void*)&task_argv, tskIDLE_PRIORITY+5, NULL) != pdPASS)
+    {
+        debug("\nError - Can't create Internet status task (not enough memory?)\n");
         debug("Rebooting the system...\n\n");
         esp_restart();
     }
 
     // Create OTA Task
-    if(xTaskCreate(&task_ota, "task_ota", TASK_OTA_STACK, (void*)&task_argv,
+    if(xTaskCreate(&task_ota, "task_ota", TASK_OTA_STACK, (void*)&task_argv, 
                    tskIDLE_PRIORITY+5, NULL) != pdPASS)
     {
-		debug("\nError - Can't create OTA task (not enough memory?)\n");
+        debug("\nError - Can't create OTA task (not enough memory?)\n");
         debug("Rebooting the system...\n\n");
         esp_restart();
     }

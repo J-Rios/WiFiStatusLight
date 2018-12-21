@@ -41,6 +41,7 @@ typedef struct
     // Volatile Parameters
     bool wifi_connected;
     bool wifi_has_ip;
+    bool internet_connection;
     bool ota_update;
     uint8_t device_mac[MAX_LENGTH_MAC_ADDR+1];
     char wifi_ip[MAX_LENGTH_IPV4+1];
@@ -67,6 +68,9 @@ class Globals
 
         bool get_wifi_has_ip(bool& to_get);
         bool set_wifi_has_ip(const bool to_set);
+
+        bool get_internet_connection(bool& to_get);
+        bool set_internet_connection(const bool to_set);
 
         bool get_ota_update(bool& to_get);
         bool set_ota_update(const bool to_set);
