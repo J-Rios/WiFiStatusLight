@@ -21,6 +21,7 @@ void task_wifi_status(void *pvParameter)
 {
     bool wifi_connected = false;
     bool wifi_has_ip = false;
+    bool internet_conn = false;
 
     // Get provided parameters
     tasks_argv* task_argv = (tasks_argv*)pvParameter;
@@ -40,14 +41,23 @@ void task_wifi_status(void *pvParameter)
         // Check for actual WiFi status
         Global->get_wifi_connected(wifi_connected);
         Global->get_wifi_has_ip(wifi_has_ip);
+        Global->get_internet_connection(internet_conn);
 
         // Show the actual WiFi status using the RGB LED
         if(!wifi_connected && !wifi_has_ip)
             LED_RGB->on(RGB_RED);
         else if(wifi_connected && !wifi_has_ip)
-            LED_RGB->on(RGB_GREEN);
+        {
+            LED_RGB->toggle(RGB_RED);
+            delay(400);
+        }
         else if(wifi_connected && wifi_has_ip)
-            LED_RGB->on(RGB_BLUE);
+        {
+            if(!internet_conn)
+                LED_RGB->on(RGB_GREEN);
+            else
+                LED_RGB->on(RGB_BLUE);
+        }
 
         // Task CPU release
         delay(100);

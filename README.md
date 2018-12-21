@@ -2,6 +2,12 @@
 
 RGB Light to monitorize and shows WiFi connection status.
 
+Actual Network Status LED Show:
+- LED RED ON: Device not connected to AP.
+- LED RED Blinking: Device connected but waiting for IP.
+- LED GREEN ON: Device connected and has IP, but no Internet connection.
+- LED BLUE ON: Device connected, with IP and Internet connection. Everything is OK.
+
 ### Notes:
 - Device ESP32.
 - Platformio project using Visual Studio Code.
