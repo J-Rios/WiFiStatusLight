@@ -77,7 +77,7 @@ void system_start(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB)
     Global->get_firmware_version(fw_version);
     debug("Firmware version: %s\n", fw_version);
 
-    Btn_OTA_Update->mode(PULLUP);
+    Btn_OTA_Update->mode(NORMAL);
     debug("Button OTA initialized.\n");
 
     LED_RGB->init();

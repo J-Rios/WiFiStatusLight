@@ -27,10 +27,10 @@
 #define DEBUG true
 
 // I/O pins defines
-#define P_O_RGBLED_R             GPIO_NUM_12
-#define P_O_RGBLED_G             GPIO_NUM_13
-#define P_O_RGBLED_B             GPIO_NUM_14
-#define P_I_BTN_OTA              GPIO_NUM_17
+#define P_O_RGBLED_R             GPIO_NUM_25
+#define P_O_RGBLED_G             GPIO_NUM_32
+#define P_O_RGBLED_B             GPIO_NUM_33
+#define P_I_BTN_OTA              GPIO_NUM_34
 
 // Tasks Stack size
 #define TASK_WIFI_STATUS_STACK   configMINIMAL_STACK_SIZE+2048
