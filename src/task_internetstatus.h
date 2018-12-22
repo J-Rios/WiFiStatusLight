@@ -28,7 +28,6 @@ extern "C" {
 #include <string.h>
 
 // Device libraries (ESP-IDF)
-//#include <lwip/netif.h>
 #include <lwip/sockets.h>
 #include <ping.h>
 #include <esp_ping.h>
@@ -46,7 +45,7 @@ extern void task_internet_status(void *pvParameter);
 
 extern void ping_setup(void);
 extern void ping_run(const char* ip_address);
-extern esp_err_t pingResults(ping_target_id_t msg_type, esp_ping_found* found);
+extern esp_err_t ping_result(ping_target_id_t msg_type, esp_ping_found* found);
 
 /**************************************************************************************************/
 

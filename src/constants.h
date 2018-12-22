@@ -72,8 +72,8 @@ const uint32_t PING_NUM_SENT   = 4;
 const uint32_t PING_TIMEOUT_MS = 5000;
 const uint32_t PING_DELAY_MS   = 500;
 
-// Time between each Internet status checks (30s)
-#define T_INTERNET_CHECKS        30000
+// Time between each Internet status checks (100ms for 300 times = 30s)
+#define T_INTERNET_CHECKS        300
 
 /**************************************************************************************************/
 

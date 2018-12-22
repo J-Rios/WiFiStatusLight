@@ -14,8 +14,8 @@
 /**************************************************************************************************/
 
 volatile bool pinging = false;
+volatile bool ping_success = false;
 volatile uint8_t num_pings = 0;
-volatile uint8_t num_success_pins = 0;
 
 /**************************************************************************************************/
 
@@ -47,30 +47,52 @@ void task_internet_status(void *pvParameter)
             if(!pinging)
             {
                 // Launch ping
-                //debug("Launching ping to %s\n", PING_TO_URL);
+                debug("Launching ping to %s\n", PING_TO_URL);
                 ping_run(PING_TO_URL);
 
                 // Block until ping result
-                //debug("Waiting Ping Result...\n");
+                debug("Waiting Ping Result...\n");
                 while(pinging)
+                {
+                    // Check if connection has been lost
+                    Global->get_wifi_connected(wifi_connected);
+                    Global->get_wifi_has_ip(wifi_has_ip);
+                    if(!wifi_connected || !wifi_has_ip)
+                        ping_success = false;
+
                     delay(100);
+                }
 
                 // Set internet connection from pings result
-                if(num_success_pins)
+                if(ping_success)
                 {
-                    //debug("Ping OK\n");
+                    debug("Ping OK - Internet connection.\n");
                     Global->set_internet_connection(true);
                 }
                 else
                 {
-                    //debug("Ping Fail\n");
+                    debug("Ping Fail - No Internet connection.\n");
                     Global->set_internet_connection(false);
                 }
 
-                // Wait T_INTERNET_CHECKS seconds until next internet check
-                delay(T_INTERNET_CHECKS);
+                // Wait T_INTERNET_CHECKS*100 milliseconds until next internet check
+                for(uint16_t i = 0; i < T_INTERNET_CHECKS; i++)
+                {
+                    // Stop waiting if connections has been lost
+                    Global->get_wifi_connected(wifi_connected);
+                    Global->get_wifi_has_ip(wifi_has_ip);
+                    if(!wifi_connected || !wifi_has_ip)
+                    {
+                        Global->set_internet_connection(false);
+                        break;
+                    }
+                    
+                    delay(100);
+                }
             }
         }
+        else
+            Global->set_internet_connection(false);
 
         // Task CPU release
         delay(100);
@@ -81,21 +103,21 @@ void task_internet_status(void *pvParameter)
 
 /* Ping Process Completed Callback */
 
-esp_err_t pingResults(ping_target_id_t msg_type, esp_ping_found* found)
+esp_err_t ping_result(ping_target_id_t msg_type, esp_ping_found* found)
 {
     /*debug("\nAvgTime:%.1fmS Sent:%d Rec:%d Err:%d min(mS):%d max(mS):%d \n", 
            (float)found->total_time/found->recv_count, found->send_count, found->recv_count, 
            found->err_count, found->min_time, found->max_time);
 	debug("Resp(mS):%d Timeouts:%d Total Time:%d\n",found->resp_time, found->timeout_count, 
            found->total_time);*/
-
-    if(found->err_count == 0)
-        num_success_pins = num_success_pins + 1;
     
     num_pings = num_pings + 1;
     //debug("Ping iteration %d\n", num_pings);
     if(num_pings == PING_NUM_SENT+1)
     {
+        if(found->recv_count > 0)
+            ping_success = true;
+
         pinging = false;
         num_pings = 0;
     }
@@ -113,7 +135,7 @@ void ping_setup(void)
     esp_ping_set_target(PING_TARGET_IP_ADDRESS_COUNT, (void*)&PING_NUM_SENT, sizeof(uint32_t));
     esp_ping_set_target(PING_TARGET_RCV_TIMEO, (void*)&PING_TIMEOUT_MS, sizeof(uint32_t));
     esp_ping_set_target(PING_TARGET_DELAY_TIME, (void*)&PING_DELAY_MS, sizeof(uint32_t));
-    esp_ping_set_target(PING_TARGET_RES_FN, (void*)&pingResults, sizeof(&pingResults));
+    esp_ping_set_target(PING_TARGET_RES_FN, (void*)&ping_result, sizeof(&ping_result));
 }
 
 // Launch ping process
@@ -123,7 +145,7 @@ void ping_run(const char* ip_address)
     inet_pton(AF_INET, ip_address, &remote_host);
     esp_ping_set_target(PING_TARGET_IP_ADDRESS, &remote_host.addr, sizeof(uint32_t));
 
-    num_success_pins = 0;
+    ping_success = false;
     pinging = true;
     ping_init();
 }
