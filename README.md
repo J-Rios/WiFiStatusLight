@@ -7,6 +7,7 @@ Actual Network Status LED Show:
 - LED RED Blinking: Device connected but waiting for IP.
 - LED GREEN ON: Device connected and has IP, but no Internet connection.
 - LED BLUE ON: Device connected, with IP and Internet connection. Everything is OK.
+- LED PURPLE ON: Device is receiving an OTA update and is upgrading to new version.
 
 ### Notes:
 - Device ESP32.
