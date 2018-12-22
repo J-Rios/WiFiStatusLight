@@ -4,7 +4,7 @@
 // Description: Commons functions file
 // Created on: 17 nov. 2018
 // Last modified date: 18 nov. 2018
-// Version: 0.0.1
+// Version: 1.0.0
 /**************************************************************************************************/
 
 /* Libraries */

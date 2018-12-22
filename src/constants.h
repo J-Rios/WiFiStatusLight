@@ -3,8 +3,8 @@
 // File: constants.h
 // Description: Project constants file
 // Created on: 17 nov. 2018
-// Last modified date: 21 dec. 2018
-// Version: 0.0.1
+// Last modified date: 22 dec. 2018
+// Version: 1.0.0
 /**************************************************************************************************/
 
 /* Include Guard */
