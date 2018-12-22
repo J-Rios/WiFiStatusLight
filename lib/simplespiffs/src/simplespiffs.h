@@ -19,6 +19,15 @@
 // Set to true or false to enable/disable FreeRTOS safe use of the input pin through multiples Tasks
 #define FREERTOS_MUTEX true
 
+// Enable/Disable Serial debug messages
+#define DEBUG true
+
+// Debug macro
+#define debug(...) do { if(DEBUG) printf(__VA_ARGS__); } while (0)
+
+// Maximum SPIFFS file text line lenght
+#define MAX_LENGHT_SPIFFS_LINE 64
+
 /**************************************************************************************************/
 
 /* Libraries */
@@ -36,19 +45,6 @@
 
 // Device libraries (ESP-IDF)
 #include "esp_spiffs.h"
-
-/**************************************************************************************************/
-
-/* Defines & Constants */
-
-// Enable/Disable Serial debug messages
-#define DEBUG true
-
-// Debug macro
-#define debug(...) do { if(DEBUG) printf(__VA_ARGS__); } while (0)
-
-// Maximum SPIFFS file text line lenght
-#define MAX_LENGHT_SPIFFS_LINE 64
 
 /**************************************************************************************************/
 
