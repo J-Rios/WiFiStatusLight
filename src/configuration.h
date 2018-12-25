@@ -1,16 +1,16 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
-// File: commons.h
-// Description: Commons functions file
-// Created on: 17 nov. 2018
-// Last modified date: 18 nov. 2018
-// Version: 1.0.0
+// File: configuration.h
+// Description: Device configuration and persistent parameters save/load functions file
+// Created on: 25 dec. 2018
+// Last modified date: 25 dec. 2018
+// Version: 0.0.1
 /**************************************************************************************************/
 
 /* Include Guard */
 
-#ifndef COMMONS_H
-#define COMMONS_H
+#ifndef CONFIGURATION_H
+#define CONFIGURATION_H
 
 /**************************************************************************************************/
 
@@ -25,45 +25,23 @@ extern "C" {
 /* Libraries */
 
 // FreeRTOS libraries
-//#include <freertos/FreeRTOS.h>
+
 
 // Device libraries (ESP-IDF)
-#include <esp_system.h>
-#include <esp_spi_flash.h>
+#include <cJSON.h>
 
 // Custom libraries
 #include "constants.h"
 #include "globals.h"
-#include "buttons.h"
-#include "rgbleds.h"
-
-/**************************************************************************************************/
-
-/* Macros */
-
-// Debug macro
-#define debug(...) do { if(DEBUG) printf(__VA_ARGS__); } while (0)
-
-// FreeRTOS to Arduino like delay() macro
-#define delay(x) do { vTaskDelay(x/portTICK_PERIOD_MS); } while(0)
-
-/**************************************************************************************************/
-
-/* FreeRTOS Tasks Arguments Struct */
-
-typedef struct 
-{
-    Globals* Global;
-    Buttons* Btn_OTA_Update;
-    RGBLEDs* LED_RGB;
-} tasks_argv;
+#include "commons.h"
+#include "simplespiffs.h"
 
 /**************************************************************************************************/
 
 /* Functions */
 
-extern void show_device_info(void);
-extern void show_device_config(Globals* Global);
+extern void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global);
+extern uint8_t get_json_str_default_config(cJSON* json_default_config, char* cstr_json);
 
 /**************************************************************************************************/
 

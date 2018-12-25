@@ -52,6 +52,9 @@
 #define DEFAULT_FIRMWARE_VERSION "0.0.1"
 #define MAX_WIFI_CONN_RETRIES    50
 
+
+#define SPIFFS_CONFIG_FILE        "/spiffs/config.json"
+
 /**************************************************************************************************/
 
 /* Task OTA Defines & Constants */
@@ -60,7 +63,6 @@
 #define OTA_SERVER_VERSION_FILE  "https://192.168.0.130/version.txt"
 #define OTA_SERVER_FIRMWARE_FILE "https://192.168.0.130/firmware.bin"
 #define OTA_SERVER_HTTPS_PORT    443
-
 
 /**************************************************************************************************/
 

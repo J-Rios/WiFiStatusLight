@@ -24,11 +24,10 @@
 void show_device_info(void)
 {
     esp_chip_info_t chip_info;
-    
+    esp_chip_info(&chip_info);
+
     debug("Device Info:\n");
     debug("---------------\n");
-    
-    esp_chip_info(&chip_info);
     if(chip_info.model == CHIP_ESP32)
         debug("Chip Model: ESP32\n");
     else
@@ -52,6 +51,27 @@ void show_device_info(void)
         else
             debug("  - External Flash memory\n");
     }
+    debug("\n");
+}
 
+// Read device actual configuration and show it through serial
+void show_device_config(Globals* Global)
+{
+    char wifi_ssid[MAX_LENGTH_WIFI_SSID+1];
+    char wifi_pass[MAX_LENGTH_WIFI_PASS+1];
+    char internet_check_url[MAX_LENGTH_IPV4+1];
+    char firmware_version[MAX_LENGTH_VERSION+1];
+
+    Global->get_wifi_ssid(wifi_ssid);
+    Global->get_wifi_pass(wifi_pass);
+    Global->get_internet_check_url(internet_check_url);
+    Global->get_firmware_version(firmware_version);
+
+    debug("Actual Device Configuration Parameters:\n");
+    debug("---------------------------------------\n");
+    debug("WiFi SSID: %s\n", wifi_ssid);
+    debug("WiFi PASS: %s\n", wifi_pass);
+    debug("Check Internet pinging to: %s\n", internet_check_url);
+    debug("Firmware Version: %s\n", firmware_version);
     debug("\n");
 }

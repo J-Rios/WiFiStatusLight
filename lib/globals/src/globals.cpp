@@ -47,10 +47,12 @@ Globals::Globals(void)
     snprintf(data.firmware_version, MAX_LENGTH_VERSION+1, "%s", DEFAULT_FIRMWARE_VERSION);
     memset(data.wifi_ssid, '\0', MAX_LENGTH_WIFI_SSID+1);
     memset(data.wifi_pass, '\0', MAX_LENGTH_WIFI_PASS+1);
+    memset(data.internet_check_url, '\0', MAX_LENGTH_IPV4+1);
     memset(data.device_mac, '\0', MAX_LENGTH_MAC_ADDR+1);
     memset(data.wifi_ip, '\0', MAX_LENGTH_IPV4+1);
     memcpy(data.wifi_ssid, DEFAULT_WIFI_SSID, MAX_LENGTH_WIFI_SSID+1);
     memcpy(data.wifi_pass, DEFAULT_WIFI_PASS, MAX_LENGTH_WIFI_PASS+1);
+    memcpy(data.internet_check_url, PING_TO_URL, MAX_LENGTH_IPV4+1);
     memcpy(data.device_mac, DEFAULT_DEVICE_MAC, MAX_LENGTH_MAC_ADDR+1);
     memcpy(data.wifi_ip, DEFAULT_DEVICE_IPV4, MAX_LENGTH_IPV4+1);
 }
@@ -91,6 +93,18 @@ bool Globals::get_wifi_pass(char* to_get)
 bool Globals::set_wifi_pass(const char* to_set)
 {
     SAFE( memcpy(data.wifi_pass, to_set, MAX_LENGTH_WIFI_PASS+1) );
+}
+
+/**************************************************************************************************/
+
+bool Globals::get_internet_check_url(char* to_get)
+{
+    SAFE( memcpy(to_get, data.internet_check_url, MAX_LENGTH_IPV4+1) );
+}
+
+bool Globals::set_internet_check_url(const char* to_set)
+{
+    SAFE( memcpy(data.internet_check_url, to_set, MAX_LENGTH_IPV4+1) );
 }
 
 /**************************************************************************************************/

@@ -38,8 +38,7 @@
 SimpleSPIFFS::SimpleSPIFFS(void)
 {
     // Set SPIFFS properties configuration
-    static const char spiffs_root_path[] = "/";
-    spiffs_conf.base_path = spiffs_root_path;
+    spiffs_conf.base_path = "/spiffs";
     spiffs_conf.partition_label = NULL;
     spiffs_conf.max_files = 5;
     spiffs_conf.format_if_mount_failed = true;
@@ -73,8 +72,6 @@ bool SimpleSPIFFS::mount(void)
         }
         else
         {
-            debug("SPIFFS - FileSystem successfully Mounted.\n");
-            
             size_t total = 0;
             size_t used = 0;
             ret = esp_spiffs_info(NULL, &total, &used);

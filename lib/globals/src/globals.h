@@ -34,9 +34,10 @@
 typedef struct
 {
     // Persistent Parameters
-    char firmware_version[MAX_LENGTH_VERSION+1];
     char wifi_ssid[MAX_LENGTH_WIFI_SSID+1];
     char wifi_pass[MAX_LENGTH_WIFI_PASS+1];
+    char internet_check_url[MAX_LENGTH_IPV4+1];
+    char firmware_version[MAX_LENGTH_VERSION+1];
 
     // Volatile Parameters
     bool wifi_connected;
@@ -62,6 +63,9 @@ class Globals
 
         bool get_wifi_pass(char* to_get);
         bool set_wifi_pass(const char* to_set);
+
+        bool get_internet_check_url(char* to_get);
+        bool set_internet_check_url(const char* to_set);
 
         bool get_wifi_connected(bool& to_get);
         bool set_wifi_connected(const bool to_set);
