@@ -3,7 +3,7 @@
 // File: simplespiffs.cpp
 // Description: HAL library to ease SPIFFS usage.
 // Created on: 22 dec. 2018
-// Last modified date: 22 dec. 2018
+// Last modified date: 25 dec. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -25,7 +25,8 @@
 // Debug macro
 #define debug(...) do { if(DEBUG) printf(__VA_ARGS__); } while (0)
 
-// Maximum SPIFFS file text line lenght
+// Maximum SPIFFS file text content and line lenght
+#define MAX_SPIFFS_FILE_CONTENT 1024
 #define MAX_LENGHT_SPIFFS_LINE 64
 
 /**************************************************************************************************/
@@ -56,7 +57,10 @@ class SimpleSPIFFS
         bool unmount(void);
         bool file_exists(const char* path);
         int32_t file_count_lines(const char* path);
+        size_t file_size(const char* path);
+        bool file_read(const char* path, char* read);
         bool file_read_line(const char* path, const uint16_t line_num, char* read_line);
+        bool file_write(const char* path, const char* write);
         bool file_write_line(const char* path, char* text_line);
         bool file_append_line(const char* path, char* text_line);
         bool file_move_rename(const char* path1, const char* path2);

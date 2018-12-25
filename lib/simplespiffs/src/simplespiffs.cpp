@@ -3,7 +3,7 @@
 // File: simplespiffs.cpp
 // Description: HAL library to ease SPIFFS usage.
 // Created on: 22 dec. 2018
-// Last modified date: 22 dec. 2018
+// Last modified date: 25 dec. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -148,6 +148,68 @@ int32_t SimpleSPIFFS::file_count_lines(const char* path)
     return num_lines;
 }
 
+// Get file size (in Bytes)
+size_t SimpleSPIFFS::file_size(const char* path)
+{
+    long f_size = 0;
+
+    SAFE
+    (
+        FILE* f = fopen(path, "rb");
+        if(f != NULL)
+        {
+            fseek(f, 0, SEEK_END);
+            f_size = ftell(f);
+
+            fclose(f);
+        }
+    );
+
+    return f_size;
+}
+
+// Read all file content
+bool SimpleSPIFFS::file_read(const char* path, char* read)
+{
+    bool read_ok = false;
+    long f_size = 0;
+
+    SAFE
+    (
+        FILE* f = fopen(path, "rb");
+        if(f != NULL)
+        {
+            memset(read, '\0', MAX_SPIFFS_FILE_CONTENT);
+
+            // Check file size
+            fseek(f, 0, SEEK_END);
+            f_size = ftell(f);
+            fseek(f, 0, SEEK_SET);
+
+            // Read file content
+            if(f_size > MAX_SPIFFS_FILE_CONTENT-1)
+            {
+                fread(read, MAX_SPIFFS_FILE_CONTENT-1, 1, f);
+                read[MAX_SPIFFS_FILE_CONTENT-1] = '\0';
+
+                debug("SPIFFS - Warning, file too large to be read into read buffer.\n");
+            }
+            else
+            {
+                fread(read, f_size, 1, f);
+                read[f_size] = '\0';
+                read_ok = true;
+            }
+
+            fclose(f);
+        }
+        else
+            debug("SPIFFS - Error, can't open file for reading.\n");
+    );
+
+    return read_ok;
+}
+
 // Read specified line of a file (line_num start at 0 and goes to 65535)
 bool SimpleSPIFFS::file_read_line(const char* path, const uint16_t line_num, char* read_line)
 {
@@ -189,6 +251,28 @@ bool SimpleSPIFFS::file_read_line(const char* path, const uint16_t line_num, cha
     );
 
     return read_ok;
+}
+
+// Read all file content
+bool SimpleSPIFFS::file_write(const char* path, const char* write)
+{
+    bool write_ok = false;
+
+    // Write to file
+    SAFE
+    (
+        FILE* f = fopen(path, "wb");
+        if (f != NULL)
+        {
+            write_ok = true;
+            fprintf(f, write);
+            fclose(f);
+        }
+        else
+            debug("SPIFFS - Error, can't open file for writing.\n");
+    );
+
+    return write_ok;
 }
 
 // Write to file
