@@ -70,7 +70,7 @@ void show_device_config(Globals* Global)
     debug("Actual Device Configuration Parameters:\n");
     debug("---------------------------------------\n");
     debug("WiFi SSID: %s\n", wifi_ssid);
-    debug("WiFi PASS: %s\n", wifi_pass);
+    //debug("WiFi PASS: %s\n", wifi_pass); // Dont show pass through Serial
     debug("Check Internet pinging to: %s\n", internet_check_url);
     debug("Firmware Version: %s\n", firmware_version);
     debug("\n");

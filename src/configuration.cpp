@@ -23,12 +23,13 @@
 // Create/Load persistent SPIFFS config file from/to system parameters
 void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
 {
+    uint8_t error;
     cJSON* json_default_config = NULL;
     cJSON* json_actual_config = NULL;
-    char* cstr_default_config = NULL;
-    uint8_t error;
+    char cstr_default_config[MAX_SPIFFS_FILE_CONTENT+5];
 
     // Get default device config (parameters-values) JSON object
+    memset(cstr_default_config, '\0', MAX_SPIFFS_FILE_CONTENT);
     error = get_json_str_default_config(json_default_config, cstr_default_config);
     if(error != 0)
     {
@@ -47,7 +48,7 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
     if(!SPIFFS->file_exists(SPIFFS_CONFIG_FILE))
     {
         // SPIFFS doesnt has any config file, create it with default configs
-        debug("Persistent SPIFFS JSON device config file doesn't found. Creating a new one with " \
+        debug("Persistent config file doesn't found. Creating a new one with " \
               "default values...\n");
         if(!SPIFFS->file_write(SPIFFS_CONFIG_FILE, cstr_default_config))
         {
@@ -55,13 +56,14 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
             debug("Rebooting the system...\n");
             esp_restart();
         }
-        debug("Config file with default values successfully created.\n");
+        debug("Config file successfully created.\n");
     }
     else
     {
         // SPIFFS has a config file, lets read it
         char cstr_actual_config[MAX_SPIFFS_FILE_CONTENT];
         memset(cstr_actual_config, '\0', MAX_SPIFFS_FILE_CONTENT);
+        debug("Persistent config file found. Loading data...\n");
         if(!SPIFFS->file_read(SPIFFS_CONFIG_FILE, cstr_actual_config))
         {
             debug("SPIFFS config file can't be read.\n");
@@ -71,12 +73,11 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
 
         // Get JSON object of actual device configuration
         const char** return_parse_end = NULL;
-        debug("\n\n%s.\n\n", cstr_actual_config);
         json_actual_config = cJSON_ParseWithOpts(cstr_actual_config, return_parse_end, 1);
         if(json_actual_config == NULL)
         {
             debug("Can't parse JSON data from actual config C string.\n");
-            debug("Error before: %s\n", *return_parse_end);
+            debug("Error before: %s\n", return_parse_end[0]);
             debug("Rebooting the system...\n");
             esp_restart();
         }
@@ -95,7 +96,7 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
         }
         else
         {
-            debug("WiFi SSID parameter not found inside persistent config file, regenerating...");
+            debug("WiFi SSID parameter not found inside persistent config file, regenerating...\n");
             char wifi_ssid_val[MAX_LENGTH_WIFI_SSID+1];
             Global->get_wifi_ssid(wifi_ssid_val);
             cJSON_AddStringToObject(json_actual_config, "wifi_ssid", wifi_ssid_val);
@@ -112,7 +113,7 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
         }
         else
         {
-            debug("WiFi PASS parameter not found inside persistent config file, regenerating...");
+            debug("WiFi PASS parameter not found inside persistent config file, regenerating...\n");
             char wifi_pass_val[MAX_LENGTH_WIFI_PASS+1];
             Global->get_wifi_pass(wifi_pass_val);
             cJSON_AddStringToObject(json_actual_config, "wifi_pass", wifi_pass_val);
@@ -125,11 +126,12 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
         if(cJSON_IsString(ping_check_url) && (ping_check_url->valuestring != NULL))
         {
             Global->set_internet_check_url(ping_check_url->valuestring);
-            debug("Internet check ping URL parameter successfully load from persistent config file.\n");
+            debug("Internet check URL parameter successfully load from persistent config file.\n");
         }
         else
         {
-            debug("Internet check ping URL parameter not found inside persistent config file, regenerating...");
+            debug("Internet check URL parameter not found inside persistent config file, " \
+                  "regenerating...\n");
             char ping_check_url_val[MAX_LENGTH_IPV4+1];
             Global->get_internet_check_url(ping_check_url_val);
             cJSON_AddStringToObject(json_actual_config, "internet_check_url", ping_check_url_val);
@@ -146,7 +148,8 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
         }
         else
         {
-            debug("Firmware version parameter not found inside persistent config file, regenerating...");
+            debug("Firmware version parameter not found inside persistent config file, " \
+                  "regenerating...\n");
             char firmware_ver_val[MAX_LENGTH_WIFI_SSID+1];
             Global->get_firmware_version(firmware_ver_val);
             cJSON_AddStringToObject(json_actual_config, "internet_check_url", firmware_ver_val);
@@ -157,10 +160,9 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
         if(any_missing_param)
         {
             // Get C string representation of created JSON
-            char* cstr_actual_config_read;
-            cstr_actual_config_read = NULL;
-            cstr_actual_config_read = cJSON_Print(json_default_config);
-            if(cstr_actual_config_read != NULL)
+            char cstr_actual_config_read[MAX_SPIFFS_FILE_CONTENT+5];
+            memset(cstr_actual_config_read, '\0', MAX_SPIFFS_FILE_CONTENT);
+            if(cJSON_PrintPreallocated(json_actual_config, cstr_actual_config_read, MAX_SPIFFS_FILE_CONTENT, 1))
             {
                 debug("Rewriting SPIFFS JSON device config file with missing parameters...\n");
                 if(!SPIFFS->file_write(SPIFFS_CONFIG_FILE, cstr_actual_config_read))
@@ -175,11 +177,7 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
                 debug("Can't parse JSON object to C string.\n");
         }
 
-        // Free JSON resources (JSON object and all subobjects)
-        cJSON_Delete(wifi_ssid);
-        cJSON_Delete(wifi_pass);
-        cJSON_Delete(ping_check_url);
-        cJSON_Delete(firmware_ver);
+        debug("\n");
     }
 
     // Free JSON resources (JSON object and all subobjects)
@@ -192,11 +190,8 @@ uint8_t get_json_str_default_config(cJSON* json_default_config, char* cstr_json)
 {
     uint8_t rc = 0;
 
-    // Set input arguments to NULL
-    json_default_config = NULL;
-    cstr_json = NULL;
-
     // Default device config (parameters-values) JSON object
+    json_default_config = NULL;
     json_default_config = cJSON_CreateObject();
     if(json_default_config != NULL)
     {
@@ -207,9 +202,7 @@ uint8_t get_json_str_default_config(cJSON* json_default_config, char* cstr_json)
         cJSON_AddStringToObject(json_default_config, "firmware_ver", DEFAULT_FIRMWARE_VERSION);
 
         // Get C string representation of created JSON
-        cstr_json = NULL;
-        cstr_json = cJSON_Print(json_default_config);
-        if(cstr_json == NULL)
+        if(!cJSON_PrintPreallocated(json_default_config, cstr_json, MAX_SPIFFS_FILE_CONTENT, 1))
             rc = 2;
     }
     else

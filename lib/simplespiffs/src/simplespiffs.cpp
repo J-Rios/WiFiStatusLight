@@ -173,7 +173,7 @@ bool SimpleSPIFFS::file_read(const char* path, char* read)
 
     SAFE
     (
-        FILE* f = fopen(path, "rb");
+        FILE* f = fopen(path, "r");
         if(f != NULL)
         {
             memset(read, '\0', MAX_SPIFFS_FILE_CONTENT);
@@ -258,11 +258,11 @@ bool SimpleSPIFFS::file_write(const char* path, const char* write)
     // Write to file
     SAFE
     (
-        FILE* f = fopen(path, "wb");
+        FILE* f = fopen(path, "w");
         if (f != NULL)
         {
             write_ok = true;
-            fprintf(f, write);
+            fprintf(f, "%s", write);
             fclose(f);
         }
         else
