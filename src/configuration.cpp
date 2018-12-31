@@ -82,80 +82,9 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
             esp_restart();
         }
 
-        /* Load actual device configuration to system
-           Regenerate each missing config parameter (key-value pair) in persistent config file */
-        bool any_missing_param = false;
-
-        // Parameter: wifi_ssid
-        cJSON* wifi_ssid = NULL;
-        wifi_ssid = cJSON_GetObjectItemCaseSensitive(json_actual_config, "wifi_ssid");
-        if(cJSON_IsString(wifi_ssid) && (wifi_ssid->valuestring != NULL))
-        {
-            Global->set_wifi_ssid(wifi_ssid->valuestring);
-            debug("WiFi SSID parameter successfully load from persistent config file.\n");
-        }
-        else
-        {
-            debug("WiFi SSID parameter not found inside persistent config file, regenerating...\n");
-            char wifi_ssid_val[MAX_LENGTH_WIFI_SSID+1];
-            Global->get_wifi_ssid(wifi_ssid_val);
-            cJSON_AddStringToObject(json_actual_config, "wifi_ssid", wifi_ssid_val);
-            any_missing_param = true;
-        }
-
-        // Parameter: wifi_pass
-        cJSON* wifi_pass = NULL;
-        wifi_pass = cJSON_GetObjectItemCaseSensitive(json_actual_config, "wifi_pass");
-        if(cJSON_IsString(wifi_pass) && (wifi_pass->valuestring != NULL))
-        {
-            Global->set_wifi_pass(wifi_pass->valuestring);
-            debug("WiFi PASS parameter successfully load from persistent config file.\n");
-        }
-        else
-        {
-            debug("WiFi PASS parameter not found inside persistent config file, regenerating...\n");
-            char wifi_pass_val[MAX_LENGTH_WIFI_PASS+1];
-            Global->get_wifi_pass(wifi_pass_val);
-            cJSON_AddStringToObject(json_actual_config, "wifi_pass", wifi_pass_val);
-            any_missing_param = true;
-        }
-
-        // Parameter: internet_check_url
-        cJSON* ping_check_url = NULL;
-        ping_check_url = cJSON_GetObjectItemCaseSensitive(json_actual_config, "internet_check_url");
-        if(cJSON_IsString(ping_check_url) && (ping_check_url->valuestring != NULL))
-        {
-            Global->set_internet_check_url(ping_check_url->valuestring);
-            debug("Internet check URL parameter successfully load from persistent config file.\n");
-        }
-        else
-        {
-            debug("Internet check URL parameter not found inside persistent config file, " \
-                  "regenerating...\n");
-            char ping_check_url_val[MAX_LENGTH_IPV4+1];
-            Global->get_internet_check_url(ping_check_url_val);
-            cJSON_AddStringToObject(json_actual_config, "internet_check_url", ping_check_url_val);
-            any_missing_param = true;
-        }
-
-        // Parameter: firmware_ver
-        cJSON* firmware_ver = NULL;
-        firmware_ver = cJSON_GetObjectItemCaseSensitive(json_actual_config, "firmware_ver");
-        if(cJSON_IsString(firmware_ver) && (firmware_ver->valuestring != NULL))
-        {
-            Global->set_firmware_version(firmware_ver->valuestring);
-            debug("Firmware version parameter successfully load from persistent config file.\n");
-        }
-        else
-        {
-            debug("Firmware version parameter not found inside persistent config file, " \
-                  "regenerating...\n");
-            char firmware_ver_val[MAX_LENGTH_WIFI_SSID+1];
-            Global->get_firmware_version(firmware_ver_val);
-            cJSON_AddStringToObject(json_actual_config, "internet_check_url", firmware_ver_val);
-            any_missing_param = true;
-        }
-
+        // Load actual device configuration to system
+        bool any_missing_param = load_device_data(Global, json_actual_config);
+        
         // If there was any missing parameter, overwrite config file with regenerated ones
         if(any_missing_param)
         {
@@ -209,4 +138,83 @@ uint8_t get_json_str_default_config(cJSON* json_default_config, char* cstr_json)
         rc = 1;
 
     return rc;
+}
+
+// Load actual persistent device configuration to system data
+// Regenerate each missing config parameter (key-value pair) in persistent config file
+bool load_device_data(Globals* Global, cJSON* json_actual_config)
+{
+    bool any_missing_param = false;
+    
+    // Parameter: wifi_ssid
+    cJSON* wifi_ssid = NULL;
+    wifi_ssid = cJSON_GetObjectItemCaseSensitive(json_actual_config, "wifi_ssid");
+    if(cJSON_IsString(wifi_ssid) && (wifi_ssid->valuestring != NULL))
+    {
+        Global->set_wifi_ssid(wifi_ssid->valuestring);
+        debug("WiFi SSID parameter successfully load from persistent config file.\n");
+    }
+    else
+    {
+        debug("WiFi SSID parameter not found inside persistent config file, regenerating...\n");
+        char wifi_ssid_val[MAX_LENGTH_WIFI_SSID+1];
+        Global->get_wifi_ssid(wifi_ssid_val);
+        cJSON_AddStringToObject(json_actual_config, "wifi_ssid", wifi_ssid_val);
+        any_missing_param = true;
+    }
+
+    // Parameter: wifi_pass
+    cJSON* wifi_pass = NULL;
+    wifi_pass = cJSON_GetObjectItemCaseSensitive(json_actual_config, "wifi_pass");
+    if(cJSON_IsString(wifi_pass) && (wifi_pass->valuestring != NULL))
+    {
+        Global->set_wifi_pass(wifi_pass->valuestring);
+        debug("WiFi PASS parameter successfully load from persistent config file.\n");
+    }
+    else
+    {
+        debug("WiFi PASS parameter not found inside persistent config file, regenerating...\n");
+        char wifi_pass_val[MAX_LENGTH_WIFI_PASS+1];
+        Global->get_wifi_pass(wifi_pass_val);
+        cJSON_AddStringToObject(json_actual_config, "wifi_pass", wifi_pass_val);
+        any_missing_param = true;
+    }
+
+    // Parameter: internet_check_url
+    cJSON* ping_check_url = NULL;
+    ping_check_url = cJSON_GetObjectItemCaseSensitive(json_actual_config, "internet_check_url");
+    if(cJSON_IsString(ping_check_url) && (ping_check_url->valuestring != NULL))
+    {
+        Global->set_internet_check_url(ping_check_url->valuestring);
+        debug("Internet check URL parameter successfully load from persistent config file.\n");
+    }
+    else
+    {
+        debug("Internet check URL parameter not found inside persistent config file, " \
+                "regenerating...\n");
+        char ping_check_url_val[MAX_LENGTH_IPV4+1];
+        Global->get_internet_check_url(ping_check_url_val);
+        cJSON_AddStringToObject(json_actual_config, "internet_check_url", ping_check_url_val);
+        any_missing_param = true;
+    }
+
+    // Parameter: firmware_ver
+    cJSON* firmware_ver = NULL;
+    firmware_ver = cJSON_GetObjectItemCaseSensitive(json_actual_config, "firmware_ver");
+    if(cJSON_IsString(firmware_ver) && (firmware_ver->valuestring != NULL))
+    {
+        Global->set_firmware_version(firmware_ver->valuestring);
+        debug("Firmware version parameter successfully load from persistent config file.\n");
+    }
+    else
+    {
+        debug("Firmware version parameter not found inside persistent config file, " \
+                "regenerating...\n");
+        char firmware_ver_val[MAX_LENGTH_WIFI_SSID+1];
+        Global->get_firmware_version(firmware_ver_val);
+        cJSON_AddStringToObject(json_actual_config, "internet_check_url", firmware_ver_val);
+        any_missing_param = true;
+    }
+
+    return any_missing_param;
 }

@@ -51,7 +51,7 @@ void show_device_info(void)
         else
             debug("  - External Flash memory\n");
     }
-    debug("\n");
+    debug("\n\n");
 }
 
 // Read device actual configuration and show it through serial
@@ -73,5 +73,5 @@ void show_device_config(Globals* Global)
     //debug("WiFi PASS: %s\n", wifi_pass); // Dont show pass through Serial
     debug("Check Internet pinging to: %s\n", internet_check_url);
     debug("Firmware Version: %s\n", firmware_version);
-    debug("\n");
+    debug("\n\n");
 }

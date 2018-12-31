@@ -42,6 +42,7 @@ extern "C" {
 
 extern void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global);
 extern uint8_t get_json_str_default_config(cJSON* json_default_config, char* cstr_json);
+extern bool load_device_data(Globals* Global, cJSON* json_actual_config);
 
 /**************************************************************************************************/
 
