@@ -62,8 +62,9 @@ void task_ota(void *pvParameter)
                 num_iterations = num_iterations + 1;
             }
 
-            // If while iterations has reach value according to 1 hour in ms (100*10*3600 = 3600000)
-            if(num_iterations >= 3600000)
+            // If while iterations has reach value according to 1 hour for each 100ms delay
+            // [iterations_in_a_hour = ((60*60)*1000)/100 = 36000]
+            if(num_iterations >= 36000)
             {
                 // Activate OTA check for update process
                 debug("An hour has passed, checking for new firmwares.\n");
