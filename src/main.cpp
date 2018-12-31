@@ -30,6 +30,7 @@
 #include "globals.h"
 #include "commons.h"
 #include "configuration.h"
+#include "provision.h"
 #include "simplespiffs.h"
 #include "buttons.h"
 #include "rgbleds.h"
@@ -39,7 +40,8 @@
 /* Functions Prototypes */
 
 extern "C" { void app_main(void); }
-void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB);
+void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update, 
+                  Buttons* Btn_AP_Conf, RGBLEDs* LED_RGB);
 void nvs_init(void);
 void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB);
 
@@ -53,10 +55,11 @@ void app_main(void)
     Globals Global;
     SimpleSPIFFS SPIFFS;
     Buttons Btn_OTA_Update(P_I_BTN_OTA);
+    Buttons Btn_AP_Conf(P_I_BTN_AP_CONF);
     RGBLEDs LED_RGB(P_O_RGBLED_R, P_O_RGBLED_G, P_O_RGBLED_B);
 
     // System start and FreeRTOS task creation functions
-    system_start(&Global, &SPIFFS, &Btn_OTA_Update, &LED_RGB);
+    system_start(&Global, &SPIFFS, &Btn_OTA_Update, &Btn_AP_Conf, &LED_RGB);
     task_creation(&Global, &Btn_OTA_Update, &LED_RGB);
     
     // Keep Main "Task" running to avoid lost local scope data that has been passed to Tasks
@@ -69,7 +72,8 @@ void app_main(void)
 /* Functions */
 
 // Initial system start
-void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB)
+void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update, 
+                  Buttons* Btn_AP_Conf, RGBLEDs* LED_RGB)
 {
     debug("\n-------------------------------------------------------------------------------\n");
     debug("\nSystem start.\n\n");
@@ -90,8 +94,17 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
     Btn_OTA_Update->mode(NORMAL);
     debug("Button OTA initialized.\n");
 
+    Btn_AP_Conf->mode(NORMAL);
+    debug("Button AP Configuration provisioning initialized.\n");
+
     LED_RGB->init();
     debug("RGB LED initialized.\n");
+
+    // Check if device has to launch provision (first boot or provision button pressed)
+    bool first_boot_provision = true;
+    Global->get_first_boot_provision(first_boot_provision);
+    if((first_boot_provision == true) || (Btn_AP_Conf->read() == 0))
+        launch_provision(Global);
 }
 
 // Initialize Non-Volatile-Storage

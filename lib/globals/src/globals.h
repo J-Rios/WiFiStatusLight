@@ -38,6 +38,7 @@ typedef struct
     char wifi_pass[MAX_LENGTH_WIFI_PASS+1];
     char internet_check_url[MAX_LENGTH_IPV4+1];
     char firmware_version[MAX_LENGTH_VERSION+1];
+    bool first_boot_provision;
 
     // Volatile Parameters
     bool wifi_connected;
@@ -66,6 +67,9 @@ class Globals
 
         bool get_internet_check_url(char* to_get);
         bool set_internet_check_url(const char* to_set);
+
+        bool get_first_boot_provision(bool& to_get);
+        bool set_first_boot_provision(const bool to_set);
 
         bool get_wifi_connected(bool& to_get);
         bool set_wifi_connected(const bool to_set);

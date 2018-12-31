@@ -31,6 +31,7 @@
 #define P_O_RGBLED_G             GPIO_NUM_32
 #define P_O_RGBLED_B             GPIO_NUM_33
 #define P_I_BTN_OTA              GPIO_NUM_34
+#define P_I_BTN_AP_CONF          GPIO_NUM_35
 
 // Tasks Stack size
 #define TASK_WIFI_STATUS_STACK   configMINIMAL_STACK_SIZE+2048

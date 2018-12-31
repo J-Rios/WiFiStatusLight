@@ -3,7 +3,7 @@
 // File: configuration.h
 // Description: Device configuration and persistent parameters save/load functions file
 // Created on: 25 dec. 2018
-// Last modified date: 25 dec. 2018
+// Last modified date: 31 dec. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
@@ -91,7 +91,8 @@ void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global)
             // Get C string representation of created JSON
             char cstr_actual_config_read[MAX_SPIFFS_FILE_CONTENT+5];
             memset(cstr_actual_config_read, '\0', MAX_SPIFFS_FILE_CONTENT);
-            if(cJSON_PrintPreallocated(json_actual_config, cstr_actual_config_read, MAX_SPIFFS_FILE_CONTENT, 1))
+            if(cJSON_PrintPreallocated(json_actual_config, cstr_actual_config_read, 
+               MAX_SPIFFS_FILE_CONTENT, 1))
             {
                 debug("Rewriting SPIFFS JSON device config file with missing parameters...\n");
                 if(!SPIFFS->file_write(SPIFFS_CONFIG_FILE, cstr_actual_config_read))
@@ -125,6 +126,7 @@ uint8_t get_json_str_default_config(cJSON* json_default_config, char* cstr_json)
     if(json_default_config != NULL)
     {
         // Add default parameters to JSON object
+        cJSON_AddTrueToObject(json_default_config, "first_boot_provision");
         cJSON_AddStringToObject(json_default_config, "wifi_ssid", DEFAULT_WIFI_SSID);
         cJSON_AddStringToObject(json_default_config, "wifi_pass", DEFAULT_WIFI_PASS);
         cJSON_AddStringToObject(json_default_config, "internet_check_url", PING_TO_URL);
@@ -146,6 +148,31 @@ bool load_device_data(Globals* Global, cJSON* json_actual_config)
 {
     bool any_missing_param = false;
     
+    // Parameter: first_boot_provision
+    cJSON* first_boot_provision = NULL;
+    first_boot_provision = cJSON_GetObjectItemCaseSensitive(json_actual_config, 
+                                                            "first_boot_provision");
+    if(cJSON_IsBool(first_boot_provision))
+    {
+        if(cJSON_IsFalse(first_boot_provision))
+            Global->set_first_boot_provision(false);
+        else if(cJSON_IsTrue(first_boot_provision))
+            Global->set_first_boot_provision(true);
+        debug("First boot provision parameter successfully load from persistent config file.\n");
+    }
+    else
+    {
+        debug("First boot provision parameter not found inside persistent config file, " \
+              "regenerating...\n");
+        bool first_boot_provision = true;
+        Global->get_first_boot_provision(first_boot_provision);
+        if(first_boot_provision)
+            cJSON_AddTrueToObject(json_actual_config, "first_boot_provision");
+        else
+            cJSON_AddFalseToObject(json_actual_config, "first_boot_provision");
+        any_missing_param = true;
+    }
+
     // Parameter: wifi_ssid
     cJSON* wifi_ssid = NULL;
     wifi_ssid = cJSON_GetObjectItemCaseSensitive(json_actual_config, "wifi_ssid");

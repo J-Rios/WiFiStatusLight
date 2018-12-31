@@ -1,16 +1,16 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
-// File: configuration.h
-// Description: Device configuration and persistent parameters save/load functions file
-// Created on: 25 dec. 2018
-// Last modified date: 30 dec. 2018
+// File: provision.h
+// Description: System provisioning functinality based in WiFi AP and WebServer
+// Created on: 31 dec. 2018
+// Last modified date: 31 dec. 2018
 // Version: 0.0.1
 /**************************************************************************************************/
 
 /* Include Guard */
 
-#ifndef CONFIGURATION_H
-#define CONFIGURATION_H
+#ifndef PROVISION_H
+#define PROVISION_H
 
 /**************************************************************************************************/
 
@@ -28,21 +28,18 @@ extern "C" {
 
 
 // Device libraries (ESP-IDF)
-#include <cJSON.h>
+
 
 // Custom libraries
 #include "constants.h"
 #include "globals.h"
 #include "commons.h"
-#include "simplespiffs.h"
 
 /**************************************************************************************************/
 
 /* Functions */
 
-extern void device_config_init(SimpleSPIFFS* SPIFFS, Globals* Global);
-extern uint8_t get_json_str_default_config(cJSON* json_default_config, char* cstr_json);
-extern bool load_device_data(Globals* Global, cJSON* json_actual_config);
+extern void launch_provision(Globals* Global);
 
 /**************************************************************************************************/
 

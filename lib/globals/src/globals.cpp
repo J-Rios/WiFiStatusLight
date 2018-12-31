@@ -42,6 +42,7 @@ Globals::Globals(void)
     data.wifi_has_ip = false;
     data.internet_connection = false;
     data.ota_update = false;
+    data.first_boot_provision = true;
 
     // Arrays data initialization
     snprintf(data.firmware_version, MAX_LENGTH_VERSION+1, "%s", DEFAULT_FIRMWARE_VERSION);
@@ -105,6 +106,18 @@ bool Globals::get_internet_check_url(char* to_get)
 bool Globals::set_internet_check_url(const char* to_set)
 {
     SAFE( memcpy(data.internet_check_url, to_set, MAX_LENGTH_IPV4+1) );
+}
+
+/**************************************************************************************************/
+
+bool Globals::get_first_boot_provision(bool& to_get)
+{
+    SAFE( to_get = data.first_boot_provision );
+}
+
+bool Globals::set_first_boot_provision(const bool to_set)
+{
+    SAFE( data.first_boot_provision = to_set );
 }
 
 /**************************************************************************************************/
