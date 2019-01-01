@@ -64,6 +64,7 @@ typedef struct
 
 extern void show_device_info(void);
 extern void show_device_config(Globals* Global);
+extern char* esp_get_base_mac(void);
 
 /**************************************************************************************************/
 

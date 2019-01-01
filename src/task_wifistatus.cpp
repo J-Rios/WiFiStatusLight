@@ -3,8 +3,8 @@
 // File: task_wifistatus.cpp
 // Description: WiFi status FreeRTOS task file
 // Created on: 17 nov. 2018
-// Last modified date: 22 dec. 2018
-// Version: 1.0.0
+// Last modified date: 01 jan. 2019
+// Version: 1.0.1
 /**************************************************************************************************/
 
 /* Libraries */
@@ -34,7 +34,7 @@ void task_wifi_status(void *pvParameter)
     LED_RGB->on(RGB_RED);
 
     // Initialize WiFi SoftAP interface
-    wifi_init_stat(Global);
+    wifi_start_stat(Global);
 
     while(1)
     {
@@ -68,10 +68,9 @@ void task_wifi_status(void *pvParameter)
 
 /* WiFi Change Event Handler */
 
-static esp_err_t event_handler(void *ctx, system_event_t *event)
+static esp_err_t sta_event_handler(void *ctx, system_event_t *event)
 {
     static uint8_t conn_fail_retries = 0;
-    uint8_t mac[MAX_LENGTH_MAC_ADDR+1];
     char ip[MAX_LENGTH_IPV4+1];
 
     Globals* Global = (Globals*)ctx;
@@ -79,9 +78,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
     switch(event->event_id)
     {
         case SYSTEM_EVENT_STA_START:
-            ESP_ERROR_CHECK(esp_wifi_get_mac(WIFI_IF_STA, mac));
-            Global->set_device_mac(mac);
-            debug("WiFi Station interface Up (%s).\n", mac);
+            debug("WiFi Station interface Up.\n");
             debug("Connecting...\n");
             esp_wifi_connect();
             break;
@@ -150,25 +147,23 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 
 /* Functions */
 
-void wifi_init_stat(Globals* Global)
+// Start WiFi Station Client
+void wifi_start_stat(Globals* Global)
 {
     static wifi_config_t wifi_config;
-    static wifi_init_config_t cfg;
+
+    // Set TCP-IP event handler callback
+    ESP_ERROR_CHECK(esp_event_loop_init(sta_event_handler, Global));
+
+    // Configure WiFi AP properties
     char wifi_ssid[MAX_LENGTH_WIFI_SSID+1];
     char wifi_pass[MAX_LENGTH_WIFI_PASS+1];
-
     Global->get_wifi_ssid(wifi_ssid);
     Global->get_wifi_pass(wifi_pass);
-
     memcpy(wifi_config.sta.ssid, wifi_ssid, MAX_LENGTH_WIFI_SSID+1);
     memcpy(wifi_config.sta.password, wifi_pass, MAX_LENGTH_WIFI_PASS+1);
 
-    tcpip_adapter_init();
-    ESP_ERROR_CHECK(esp_event_loop_init(event_handler, Global));
-
-    cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
+    // Create and launch WiFi Station
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());

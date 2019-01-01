@@ -35,21 +35,26 @@ void show_device_info(void)
     debug("Chip Revision: %d\n", chip_info.revision);
     debug("CPU Cores: %d\n", chip_info.cores);
     debug("Flash Memory: %dMB\n", spi_flash_get_chip_size()/(1024*1024));
+    if(chip_info.features & CHIP_FEATURE_WIFI_BGN)
+    {
+        char* mac = esp_get_base_mac();
+        debug("Base MAC: %s\n", mac);
+    }
     debug("Firmware ESP-IDF version: %s\n", esp_get_idf_version());
     if((chip_info.features & CHIP_FEATURE_WIFI_BGN) || (chip_info.features & CHIP_FEATURE_BT) ||
        (chip_info.features & CHIP_FEATURE_BLE) || (chip_info.features & CHIP_FEATURE_EMB_FLASH))
     {
         debug("Characteristics:\n");
         if(chip_info.features & CHIP_FEATURE_WIFI_BGN)
-            debug("  - WiFi 2.4GHz\n");
+            debug("    WiFi 2.4GHz\n");
         if(chip_info.features & CHIP_FEATURE_BT)
-            debug("  - Bluetooth Classic\n");
+            debug("    Bluetooth Classic\n");
         if(chip_info.features & CHIP_FEATURE_BLE)
-            debug("  - Bluetooth Low Energy\n");
+            debug("    Bluetooth Low Energy\n");
         if(chip_info.features & CHIP_FEATURE_EMB_FLASH)
-            debug("  - Embedded Flash memory\n");
+            debug("    Embedded Flash memory\n");
         else
-            debug("  - External Flash memory\n");
+            debug("    External Flash memory\n");
     }
     debug("\n\n");
 }
@@ -74,4 +79,17 @@ void show_device_config(Globals* Global)
     debug("Check Internet pinging to: %s\n", internet_check_url);
     debug("Firmware Version: %s\n", firmware_version);
     debug("\n\n");
+}
+
+// Get ESP Base MAC Address
+char* esp_get_base_mac(void)
+{
+    static char mac[18];
+    uint8_t u8_mac[6];
+
+	esp_read_mac(u8_mac, ESP_MAC_WIFI_STA);
+    snprintf(mac, 18, "%02X%02X%02X%02X%02X%02X", u8_mac[0], u8_mac[1], u8_mac[2], u8_mac[3], 
+             u8_mac[4], u8_mac[5]);
+    
+    return mac;
 }

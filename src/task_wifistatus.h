@@ -3,8 +3,8 @@
 // File: task_wifistatus.cpp
 // Description: WiFi status FreeRTOS task file
 // Created on: 17 nov. 2018
-// Last modified date: 22 dec. 2018
-// Version: 1.0.0
+// Last modified date: 01 jan. 2019
+// Version: 1.0.1
 /**************************************************************************************************/
 
 /* Include Guard */
@@ -48,7 +48,7 @@ extern "C" {
 
 extern void task_wifi_status(void *pvParameter);
 
-extern void wifi_init_stat(Globals* Global);
+extern void wifi_start_stat(Globals* Global);
 
 /**************************************************************************************************/
 

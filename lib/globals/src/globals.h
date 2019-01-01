@@ -45,7 +45,6 @@ typedef struct
     bool wifi_has_ip;
     bool internet_connection;
     bool ota_update;
-    uint8_t device_mac[MAX_LENGTH_MAC_ADDR+1];
     char wifi_ip[MAX_LENGTH_IPV4+1];
 } gdata;
 
@@ -82,9 +81,6 @@ class Globals
 
         bool get_ota_update(bool& to_get);
         bool set_ota_update(const bool to_set);
-
-        bool get_device_mac(uint8_t* to_get);
-        bool set_device_mac(const uint8_t* to_set);
 
         bool get_wifi_ip(char* to_get);
         bool set_wifi_ip(const char* to_set);

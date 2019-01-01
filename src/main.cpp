@@ -3,7 +3,7 @@
 // File: main.cpp
 // Description: Project main file
 // Created on: 16 nov. 2018
-// Last modified date: 18 nov. 2018
+// Last modified date: 01 jan. 2019
 // Version: 1.0.0
 /**************************************************************************************************/
 
@@ -43,6 +43,7 @@ extern "C" { void app_main(void); }
 void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update, 
                   Buttons* Btn_AP_Conf, RGBLEDs* LED_RGB);
 void nvs_init(void);
+void wifi_init(Globals* Global);
 void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB);
 
 /**************************************************************************************************/
@@ -78,7 +79,9 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
     debug("\n-------------------------------------------------------------------------------\n");
     debug("\nSystem start.\n\n");
 
+    // Non-Volatile-Storage and WiFi interface initialization
     nvs_init();
+    wifi_init(Global);
 
     // Mount SPIFFS and create/load persistent config file
     debug("Mounting SPIFFS FileSystem...\n");
@@ -105,6 +108,25 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
     Global->get_first_boot_provision(first_boot_provision);
     if((first_boot_provision == true) || (Btn_AP_Conf->read() == 0))
         launch_provision(Global);
+    
+    // To-Do: Remove this blocking thing when provision support accomplish
+    while(1)
+        delay(1000);
+}
+
+// Init WiFi interface
+void wifi_init(Globals* Global)
+{
+    static wifi_init_config_t cfg;
+
+    debug("Initializing TCP-IP adapter...\n");
+
+    tcpip_adapter_init();
+
+    cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    debug("TCP-IP adapter successfuly initialized.\n");
 }
 
 // Initialize Non-Volatile-Storage

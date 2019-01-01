@@ -46,9 +46,10 @@
 #define MAX_LENGTH_IPV4          15
 
 // Default device parameters values
+#define DEFAULT_WIFI_AP_SSID     "WSLight"
+#define DEFAULT_WIFI_AP_PASS     "wstatus1423"
 #define DEFAULT_WIFI_SSID        "MyNet"
 #define DEFAULT_WIFI_PASS        "testpassword1423"
-#define DEFAULT_DEVICE_MAC       "00:00:00:00:00:00"
 #define DEFAULT_DEVICE_IPV4      "0.0.0.0"
 #define DEFAULT_FIRMWARE_VERSION "0.0.1"
 #define MAX_WIFI_CONN_RETRIES    50

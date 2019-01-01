@@ -49,12 +49,10 @@ Globals::Globals(void)
     memset(data.wifi_ssid, '\0', MAX_LENGTH_WIFI_SSID+1);
     memset(data.wifi_pass, '\0', MAX_LENGTH_WIFI_PASS+1);
     memset(data.internet_check_url, '\0', MAX_LENGTH_IPV4+1);
-    memset(data.device_mac, '\0', MAX_LENGTH_MAC_ADDR+1);
     memset(data.wifi_ip, '\0', MAX_LENGTH_IPV4+1);
     memcpy(data.wifi_ssid, DEFAULT_WIFI_SSID, MAX_LENGTH_WIFI_SSID+1);
     memcpy(data.wifi_pass, DEFAULT_WIFI_PASS, MAX_LENGTH_WIFI_PASS+1);
     memcpy(data.internet_check_url, PING_TO_URL, MAX_LENGTH_IPV4+1);
-    memcpy(data.device_mac, DEFAULT_DEVICE_MAC, MAX_LENGTH_MAC_ADDR+1);
     memcpy(data.wifi_ip, DEFAULT_DEVICE_IPV4, MAX_LENGTH_IPV4+1);
 }
 
@@ -166,18 +164,6 @@ bool Globals::get_ota_update(bool& to_get)
 bool Globals::set_ota_update(const bool to_set)
 {
     SAFE( data.ota_update = to_set );
-}
-
-/**************************************************************************************************/
-
-bool Globals::get_device_mac(uint8_t* to_get)
-{
-    SAFE( memcpy(to_get, data.device_mac, MAX_LENGTH_MAC_ADDR+1) );
-}
-
-bool Globals::set_device_mac(const uint8_t* to_set)
-{
-    SAFE( memcpy(data.device_mac, to_set, MAX_LENGTH_MAC_ADDR+1) );
 }
 
 /**************************************************************************************************/
