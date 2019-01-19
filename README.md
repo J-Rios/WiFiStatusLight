@@ -12,4 +12,4 @@ Actual Network Status LED Show:
 ### Notes:
 - Device ESP32.
 - Platformio project using Visual Studio Code.
-- Project using Espressif ESP-IDF Framework (Platformio platform-espressif32 v1.5.0 == ESP-IDF v3.1.1).
+- Project using Espressif ESP-IDF Framework (Platformio platform-espressif32 v1.6.0 == ESP-IDF v3.1.2).
