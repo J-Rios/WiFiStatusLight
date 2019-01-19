@@ -144,14 +144,14 @@ void task_creation(Globals* Global, Buttons* Btn_AP_Conf, Buttons* Btn_OTA_Updat
     task_argv.LED_RGB = LED_RGB;
 
     // Create Device Provision-Configuration Task
-    if(xTaskCreate(&task_device_config, "task_device_config", TASK_DEVICE_CONF_STACK, 
+    /*if(xTaskCreate(&task_device_config, "task_device_config", TASK_DEVICE_CONF_STACK, 
                    (void*)&task_argv, tskIDLE_PRIORITY+5, NULL) != pdPASS)
     {
         debug("\nError - Can't create device configuration task (not enough memory?)\n");
         debug("Rebooting the system...\n\n");
         esp_restart();
     }
-    delay(1000);
+    delay(1000);*/
     
     // Create WiFi Status Task
     if(xTaskCreate(&task_wifi_status, "task_wifi_status", TASK_WIFI_STATUS_STACK, 
