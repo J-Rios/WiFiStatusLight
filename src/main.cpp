@@ -43,7 +43,7 @@ extern "C" { void app_main(void); }
 void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update, 
                   Buttons* Btn_AP_Conf, RGBLEDs* LED_RGB);
 void nvs_init(void);
-void wifi_init(Globals* Global);
+void wifi_init(void);
 void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB);
 
 /**************************************************************************************************/
@@ -81,7 +81,7 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
 
     // Non-Volatile-Storage and WiFi interface initialization
     nvs_init();
-    wifi_init(Global);
+    wifi_init();
 
     // Mount SPIFFS and create/load persistent config file
     debug("Mounting SPIFFS FileSystem...\n");
@@ -115,7 +115,7 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
 }
 
 // Init WiFi interface
-void wifi_init(Globals* Global)
+void wifi_init(void)
 {
     static wifi_init_config_t cfg;
 

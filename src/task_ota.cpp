@@ -38,10 +38,10 @@ void task_ota(void *pvParameter)
     
     debug("\nOTA task initialized.\n");
 
-    // Initialize and set Set OTA HTTPS client config (except URL)
+    // Initialize and set OTA HTTPS client config (except URL)
     esp_http_client_config_t config;
-    config.port = OTA_SERVER_HTTPS_PORT;
-    config.cert_pem = (const char*)server_cert_pem_start;
+    config.port = HTTPS_PORT;
+    config.cert_pem = (const char*)ota_server_cert_start;
     config.transport_type = HTTP_TRANSPORT_OVER_SSL;
 
     bool ota_update = false;

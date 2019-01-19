@@ -51,8 +51,8 @@ extern "C" {
 
 /* HTTPS Certificates locates in internal Blob memory */
 
-extern const uint8_t server_cert_pem_start[] asm("_binary_otawebserver_certs_cert_pem_start");
-extern const uint8_t server_cert_pem_end[] asm("_binary_otawebserver_certs_cert_pem_end");
+extern const uint8_t ota_server_cert_start[] asm("_binary_otawebserver_certs_ota_cert_pem_start");
+extern const uint8_t ota_server_cert_end[] asm("_binary_otawebserver_certs_ota_cert_pem_end");
 
 /**************************************************************************************************/
 

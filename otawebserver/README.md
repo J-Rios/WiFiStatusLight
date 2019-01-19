@@ -5,12 +5,12 @@ This directory contains a Python HTTPS Webserver with his certificate, that goin
 ### To create custom certifies
 1 - Create a 2048 bits AES256 encrypted key (Set password passphrase, in this example "pass1234"):
 ```
-openssl genrsa -aes256 -out key.pem 2048
+openssl genrsa -aes256 -out ota_key.pem 2048
 ```
 
 2 - Create a certificate sign request file (Remember that "Common Name" must be same as server IP adress, in this case, the machine that will run the webserver is iside my local network and has a static IP of 192.168.0.20):
 ```
-openssl req -key key.pem -new -sha256 -out csr.pem
+openssl req -key ota_key.pem -new -sha256 -out ota_csr.pem
 
 Enter pass phrase for key.pem:pass1234
 
@@ -30,7 +30,7 @@ Email Address []:
 
 3 - Self-Sign the certificate for 10 years (3650 days):
 ```
-openssl x509 -req -days 3650 -in csr.pem -signkey key.pem -out cert.pem
+openssl x509 -req -days 3650 -in ota_csr.pem -signkey ota_key.pem -out ota_cert.pem
 ```
 
 
@@ -43,11 +43,11 @@ python3 ./https_server.py
 ### Notes
 SSL cert file is uploaded to ESP because it was specificied using -DCOMPONENT_EMBED_TXTFILES build flag inside platformio.init file:
 ```
-build_flags = -DCOMPONENT_EMBED_TXTFILES=otawebserver/certs/cert.pem
+build_flags = -DCOMPONENT_EMBED_TXTFILES=otawebserver/certs/ota_cert.pem
 ```
 
 To access cert binary data from ESP program code, use:
 ```
-extern const uint8_t server_cert_pem_start[] asm("_binary_otawebserver_certs_cert_pem_start");
-extern const uint8_t server_cert_pem_end[] asm("_binary_otawebserver_certs_cert_pem_end");
+extern const uint8_t server_cert_pem_start[] asm("_binary_otawebserver_certs_ota_cert_pem_start");
+extern const uint8_t server_cert_pem_end[] asm("_binary_otawebserver_certs_ota_cert_pem_end");
 ```

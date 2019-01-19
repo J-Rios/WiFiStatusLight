@@ -57,6 +57,8 @@
 
 #define SPIFFS_CONFIG_FILE        "/spiffs/config.json"
 
+#define HTTPS_PORT                443
+
 /**************************************************************************************************/
 
 /* Task OTA Defines & Constants */
@@ -64,7 +66,6 @@
 // Over The Air Server last version file and firmware, and server connecton port
 #define OTA_SERVER_VERSION_FILE  "https://192.168.0.130/version.txt"
 #define OTA_SERVER_FIRMWARE_FILE "https://192.168.0.130/firmware.bin"
-#define OTA_SERVER_HTTPS_PORT    443
 
 /**************************************************************************************************/
 
