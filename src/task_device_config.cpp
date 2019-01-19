@@ -1,15 +1,15 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
-// File: provision.h
-// Description: System provisioning functinality based in WiFi AP and WebServer
-// Created on: 31 dec. 2018
-// Last modified date: 01 jan. 2019
-// Version: 0.0.1
+// File: task_device_config.cpp
+// Description: Device provision-configuration through AP and WebServer, FreeRTOS task file
+// Created on: 19 jan. 2019
+// Last modified date: 19 jan. 2019
+// Version: 1.0.0
 /**************************************************************************************************/
 
 /* Libraries */
 
-#include "provision.h"
+#include "task_device_config.h"
 
 /**************************************************************************************************/
 
@@ -37,10 +37,71 @@ volatile bool ap_start = false;
 
 /**************************************************************************************************/
 
+/* Task */
+
+// Check for device configuration from user through an WiFi AP and secure WebServer
+void task_device_config(void *pvParameter)
+{
+    bool first_boot = true;
+    bool is_config_on = false;
+    uint32_t btn_press_time = 0;
+
+    // Get provided parameters
+    tasks_argv* task_argv = (tasks_argv*)pvParameter;
+    Globals* Global = task_argv->Global;
+    RGBLEDs* LED_RGB = task_argv->LED_RGB;
+    Buttons* Btn_AP_Conf = task_argv->Btn_AP_Conf;
+
+    // Check if it is first boot
+    Global->get_first_boot_provision(first_boot);
+
+    debug("\nDevice configuration task initialized.\n");
+
+    while(1)
+    {
+        // Check if Config Button is pressed during 5s
+        if(!is_config_on)
+        {
+            if(Btn_AP_Conf->read() == 0)
+            {
+                btn_press_time = btn_press_time + 200;
+                delay(100);
+            }
+            else
+                btn_press_time = 0;
+        }
+
+        // Launch AP and WebServer
+        if((first_boot == true) || (btn_press_time >= 5000))
+        {
+            if(!is_config_on)
+            {
+                is_config_on = true;
+                first_boot = false;
+                Global->set_first_boot_provision(first_boot);
+
+                // Tur Red the RGB LED
+                LED_RGB->on(RGB_RED);
+                
+                launch_config_mode(Global);
+            }
+            else
+            {
+                // TODO - Close Web Server and WiFi AP
+            }
+        }
+
+        // Task CPU release
+        delay(100);
+    }
+}
+
+/**************************************************************************************************/
+
 /* Provision Function */
 
-// Launch device provisioning functionality elements (WiFi AP and WebServer)
-void launch_provision(Globals* Global)
+// Launch device configuration mode (WiFi AP and WebServer)
+void launch_config_mode(Globals* Global)
 {
     char ap_ssid[MAX_LENGTH_WIFI_SSID+1];
 
@@ -63,7 +124,8 @@ void launch_provision(Globals* Global)
 
 /* WiFi AP Events handler */
 
-static esp_err_t ap_event_handler(void *ctx, system_event_t* e)
+// Note - For some reason, set twice wifi events handlers fail (AP+STAT)
+/*static esp_err_t ap_event_handler(void *ctx, system_event_t* e)
 {
     switch(e->event_id)
     {
@@ -98,7 +160,7 @@ static esp_err_t ap_event_handler(void *ctx, system_event_t* e)
     }
 
     return ESP_OK;
-}
+}*/
 
 /**************************************************************************************************/
 
@@ -112,7 +174,8 @@ void wifi_start_ap(const char* ssid, const char* pass)
     debug("Creating WiFi AP...\n");
     
     // Set TCP-IP event handler callback
-    ESP_ERROR_CHECK(esp_event_loop_init(ap_event_handler, NULL));
+    // Note - For some reason, set twice wifi events handlers fail (AP+STAT)
+    //ESP_ERROR_CHECK(esp_event_loop_init(ap_event_handler, NULL));
 
     // Configure WiFi AP properties
     memcpy(wifi_config.ap.ssid, ssid, MAX_LENGTH_WIFI_SSID+1);
@@ -125,7 +188,7 @@ void wifi_start_ap(const char* ssid, const char* pass)
         wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
 
     // Create and launch WiFi AP
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+    //ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 

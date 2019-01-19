@@ -21,6 +21,7 @@
 #include <nvs_flash.h>
 
 // Tasks implementations
+#include "task_device_config.h"
 #include "task_wifistatus.h"
 #include "task_internetstatus.h"
 #include "task_ota.h"
@@ -30,7 +31,6 @@
 #include "globals.h"
 #include "commons.h"
 #include "configuration.h"
-#include "provision.h"
 #include "simplespiffs.h"
 #include "buttons.h"
 #include "rgbleds.h"
@@ -44,7 +44,8 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
                   Buttons* Btn_AP_Conf, RGBLEDs* LED_RGB);
 void nvs_init(void);
 void wifi_init(void);
-void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB);
+void task_creation(Globals* Global, Buttons* Btn_AP_Conf, Buttons* Btn_OTA_Update, 
+                   RGBLEDs* LED_RGB);
 
 /**************************************************************************************************/
 
@@ -61,7 +62,7 @@ void app_main(void)
 
     // System start and FreeRTOS task creation functions
     system_start(&Global, &SPIFFS, &Btn_OTA_Update, &Btn_AP_Conf, &LED_RGB);
-    task_creation(&Global, &Btn_OTA_Update, &LED_RGB);
+    task_creation(&Global, &Btn_AP_Conf, &Btn_OTA_Update, &LED_RGB);
     
     // Keep Main "Task" running to avoid lost local scope data that has been passed to Tasks
     while(1)
@@ -102,16 +103,6 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
 
     LED_RGB->init();
     debug("RGB LED initialized.\n");
-
-    // Check if device has to launch provision (first boot or provision button pressed)
-    bool first_boot_provision = true;
-    Global->get_first_boot_provision(first_boot_provision);
-    if((first_boot_provision == true) || (Btn_AP_Conf->read() == 0))
-        launch_provision(Global);
-    
-    // To-Do: Remove this blocking thing when provision support accomplish
-    while(1)
-        delay(1000);
 }
 
 // Init WiFi interface
@@ -125,6 +116,7 @@ void wifi_init(void)
 
     cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    esp_wifi_set_mode(WIFI_MODE_APSTA);
 
     debug("TCP-IP adapter successfuly initialized.\n");
 }
@@ -142,13 +134,24 @@ void nvs_init(void)
 }
 
 // FreeRTOS Tasks creation
-void task_creation(Globals* Global, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB)
+void task_creation(Globals* Global, Buttons* Btn_AP_Conf, Buttons* Btn_OTA_Update, RGBLEDs* LED_RGB)
 {
     // Prepare parameters to pass
     static tasks_argv task_argv;
     task_argv.Global = Global;
+    task_argv.Btn_AP_Conf = Btn_AP_Conf;
     task_argv.Btn_OTA_Update = Btn_OTA_Update;
     task_argv.LED_RGB = LED_RGB;
+
+    // Create Device Provision-Configuration Task
+    if(xTaskCreate(&task_device_config, "task_device_config", TASK_DEVICE_CONF_STACK, 
+                   (void*)&task_argv, tskIDLE_PRIORITY+5, NULL) != pdPASS)
+    {
+        debug("\nError - Can't create device configuration task (not enough memory?)\n");
+        debug("Rebooting the system...\n\n");
+        esp_restart();
+    }
+    delay(1000);
     
     // Create WiFi Status Task
     if(xTaskCreate(&task_wifi_status, "task_wifi_status", TASK_WIFI_STATUS_STACK, 

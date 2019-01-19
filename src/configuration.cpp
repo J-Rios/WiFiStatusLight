@@ -245,3 +245,23 @@ bool load_device_data(Globals* Global, cJSON* json_actual_config)
 
     return any_missing_param;
 }
+
+// Save provided parameter value into device persistent config data (save to SPIFFS config file)
+bool spiffs_save_parameter_char(const char* parameter, const char* value)
+{
+    bool fail = false;
+
+    
+
+    return fail;
+}
+
+// Save provided parameter value into device persistent config data (save to SPIFFS config file)
+bool spiffs_save_parameter_bool(const char* parameter, const bool value)
+{
+    bool fail = false;
+
+
+
+    return fail;
+}

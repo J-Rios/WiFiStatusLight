@@ -54,6 +54,7 @@ extern "C" {
 typedef struct 
 {
     Globals* Global;
+    Buttons* Btn_AP_Conf;
     Buttons* Btn_OTA_Update;
     RGBLEDs* LED_RGB;
 } tasks_argv;

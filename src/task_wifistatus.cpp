@@ -22,6 +22,7 @@ void task_wifi_status(void *pvParameter)
     bool wifi_connected = false;
     bool wifi_has_ip = false;
     bool internet_conn = false;
+    bool first_boot = true;
 
     // Get provided parameters
     tasks_argv* task_argv = (tasks_argv*)pvParameter;
@@ -42,6 +43,7 @@ void task_wifi_status(void *pvParameter)
         Global->get_wifi_connected(wifi_connected);
         Global->get_wifi_has_ip(wifi_has_ip);
         Global->get_internet_connection(internet_conn);
+        Global->get_first_boot_provision(first_boot);
 
         // Show the actual WiFi status using the RGB LED
         if(!wifi_connected && !wifi_has_ip)
@@ -57,6 +59,14 @@ void task_wifi_status(void *pvParameter)
                 LED_RGB->on(RGB_GREEN);
             else
                 LED_RGB->on(RGB_BLUE);
+            
+            // Device connected and has IP, lets disable first_boot flag
+            if(first_boot)
+            {
+                first_boot = false;
+                Global->set_first_boot_provision(first_boot);
+                // TODO - Save disable value in persistent data flag
+            }
         }
 
         // Task CPU release
@@ -164,7 +174,7 @@ void wifi_start_stat(Globals* Global)
     memcpy(wifi_config.sta.password, wifi_pass, MAX_LENGTH_WIFI_PASS+1);
 
     // Create and launch WiFi Station
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    //ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 }

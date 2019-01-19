@@ -1,16 +1,16 @@
 /**************************************************************************************************/
 // Project: WiFiStatusLight
-// File: provision.h
-// Description: System provisioning functinality based in WiFi AP and WebServer
-// Created on: 31 dec. 2018
-// Last modified date: 01 jan. 2019
-// Version: 0.0.1
+// File: task_device_config.h
+// Description: Device provision-configuration through AP and WebServer, FreeRTOS task file
+// Created on: 19 jan. 2019
+// Last modified date: 19 jan. 2019
+// Version: 1.0.0
 /**************************************************************************************************/
 
 /* Include Guard */
 
-#ifndef PROVISION_H
-#define PROVISION_H
+#ifndef DEVICECONFIG_H
+#define DEVICECONFIG_H
 
 /**************************************************************************************************/
 
@@ -24,8 +24,8 @@ extern "C" {
 
 /* Libraries */
 
-// FreeRTOS libraries
-
+// Standard C/C++ libraries
+#include <string.h>
 
 // Device libraries (ESP-IDF)
 #include <esp_log.h>
@@ -41,6 +41,7 @@ extern "C" {
 #include "constants.h"
 #include "globals.h"
 #include "commons.h"
+#include "rgbleds.h"
 
 /**************************************************************************************************/
 
@@ -51,12 +52,14 @@ extern const uint8_t server_cert_end[] asm("_binary_httpsserver_certs_esp_cert_p
 extern const uint8_t server_key_start[] asm("_binary_httpsserver_certs_esp_key_pem_start");
 extern const uint8_t server_key_end[] asm("_binary_httpsserver_certs_esp_key_pem_end");
 
+
 /**************************************************************************************************/
 
 /* Functions */
 
-extern void launch_provision(Globals* Global);
+extern void task_device_config(void *pvParameter);
 
+extern void launch_config_mode(Globals* Global);
 extern void wifi_start_ap(const char* ap_ssid, const char* ap_pass);
 extern void start_https_web_server(Globals* Global);
 
