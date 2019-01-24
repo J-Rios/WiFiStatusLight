@@ -41,6 +41,8 @@ typedef struct
     bool first_boot_provision;
 
     // Volatile Parameters
+    bool start_ap;
+    bool start_sta;
     bool wifi_connected;
     bool wifi_has_ip;
     bool internet_connection;
@@ -69,6 +71,12 @@ class Globals
 
         bool get_first_boot_provision(bool& to_get);
         bool set_first_boot_provision(const bool to_set);
+
+        bool get_start_ap(bool& to_get);
+        bool set_start_ap(const bool to_set);
+
+        bool get_start_sta(bool& to_get);
+        bool set_start_sta(const bool to_set);
 
         bool get_wifi_connected(bool& to_get);
         bool set_wifi_connected(const bool to_set);

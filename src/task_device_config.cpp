@@ -32,11 +32,6 @@
 
 /**************************************************************************************************/
 
-/* Data Types */
-volatile bool ap_start = false;
-
-/**************************************************************************************************/
-
 /* Task */
 
 // Check for device configuration from user through an WiFi AP and secure WebServer
@@ -103,96 +98,20 @@ void task_device_config(void *pvParameter)
 // Launch device configuration mode (WiFi AP and WebServer)
 void launch_config_mode(Globals* Global)
 {
-    char ap_ssid[MAX_LENGTH_WIFI_SSID+1];
+    bool creating_ap = true;
+    Global->set_start_ap(true);
 
-    // Create SSID based on device MAC and start WiFi AP
-    char* device_mac = esp_get_base_mac();
-    snprintf(ap_ssid, MAX_LENGTH_WIFI_SSID+1, "%s-%s", DEFAULT_WIFI_AP_SSID, (char*)device_mac);
-    wifi_start_ap(ap_ssid, DEFAULT_WIFI_AP_PASS);
-
-    // Wait until AP start
-    while(!ap_start)
+    // Wait until manage_wifi task create AP
+    while(creating_ap)
+    {
+        Global->get_start_ap(creating_ap);
         delay(100);
+    }
     
-    // Create Web Server
+    // Launch Web Server
     start_https_web_server(Global);
 
     Global->set_first_boot_provision(false);
-}
-
-/**************************************************************************************************/
-
-/* WiFi AP Events handler */
-
-// Note - For some reason, set twice wifi events handlers fail (AP+STAT)
-/*static esp_err_t ap_event_handler(void *ctx, system_event_t* e)
-{
-    switch(e->event_id)
-    {
-        case SYSTEM_EVENT_AP_START:
-            debug("WiFi AP Mode started.\n");
-            ap_start = true;
-            break;
-        
-        case SYSTEM_EVENT_AP_STOP:
-            debug("WiFi AP Mode stopped.\n");
-            ap_start = false;
-            break;
-
-        case SYSTEM_EVENT_AP_STACONNECTED:
-            debug("Client connected to AP: MAC=" MACSTR ", AID=%d\n", 
-                  MAC2STR(e->event_info.sta_connected.mac), e->event_info.sta_connected.aid);
-            break;
-        
-        case SYSTEM_EVENT_AP_STADISCONNECTED:
-            debug("Client disconnected from AP: MAC=" MACSTR ", AID=%d\n", 
-                  MAC2STR(e->event_info.sta_disconnected.mac), e->event_info.sta_disconnected.aid);
-            break;
-        
-        case SYSTEM_EVENT_AP_PROBEREQRECVED:
-            break;
-
-        case SYSTEM_EVENT_MAX:
-            break;
-        
-        default:
-            break;
-    }
-
-    return ESP_OK;
-}*/
-
-/**************************************************************************************************/
-
-/* SoftAP Functions */
-
-// Start WiFi Soft-AP
-void wifi_start_ap(const char* ssid, const char* pass)
-{
-    static wifi_config_t wifi_config;
-
-    debug("Creating WiFi AP...\n");
-    
-    // Set TCP-IP event handler callback
-    // Note - For some reason, set twice wifi events handlers fail (AP+STAT)
-    //ESP_ERROR_CHECK(esp_event_loop_init(ap_event_handler, NULL));
-
-    // Configure WiFi AP properties
-    memcpy(wifi_config.ap.ssid, ssid, MAX_LENGTH_WIFI_SSID+1);
-    memcpy(wifi_config.ap.password, pass, MAX_LENGTH_WIFI_PASS+1);
-    wifi_config.ap.ssid_len = strlen(ssid);
-    wifi_config.ap.max_connection = 3;
-    if (strlen(pass) == 0)
-        wifi_config.ap.authmode = WIFI_AUTH_OPEN;
-    else
-        wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
-
-    // Create and launch WiFi AP
-    //ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
-    ESP_ERROR_CHECK(esp_wifi_start());
-
-    debug("WiFi AP \"%s\" succesfully created.\n", ssid);
 }
 
 /**************************************************************************************************/

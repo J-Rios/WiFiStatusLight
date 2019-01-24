@@ -30,9 +30,6 @@ extern "C" {
 // Device libraries (ESP-IDF)
 #include <esp_log.h>
 #include <nvs_flash.h>
-#include <esp_system.h>
-#include <esp_wifi.h>
-#include <esp_event_loop.h>
 #include <openssl/ssl.h>
 #include <lwip/sockets.h>
 #include <lwip/netdb.h>

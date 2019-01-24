@@ -38,6 +38,8 @@ Globals::Globals(void)
     MUTEX_INIT();
 
     // Boolean data initialization
+    data.start_ap = false;
+    data.start_sta = false;
     data.wifi_connected = false;
     data.wifi_has_ip = false;
     data.internet_connection = false;
@@ -116,6 +118,30 @@ bool Globals::get_first_boot_provision(bool& to_get)
 bool Globals::set_first_boot_provision(const bool to_set)
 {
     SAFE( data.first_boot_provision = to_set );
+}
+
+/**************************************************************************************************/
+
+bool Globals::get_start_ap(bool& to_get)
+{
+    SAFE( to_get = data.start_ap );
+}
+
+bool Globals::set_start_ap(const bool to_set)
+{
+    SAFE( data.start_ap = to_set );
+}
+
+/**************************************************************************************************/
+
+bool Globals::get_start_sta(bool& to_get)
+{
+    SAFE( to_get = data.start_sta );
+}
+
+bool Globals::set_start_sta(const bool to_set)
+{
+    SAFE( data.start_sta = to_set );
 }
 
 /**************************************************************************************************/

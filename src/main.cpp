@@ -21,6 +21,7 @@
 #include <nvs_flash.h>
 
 // Tasks implementations
+#include "task_manage_wifi.h"
 #include "task_device_config.h"
 #include "task_wifistatus.h"
 #include "task_internetstatus.h"
@@ -43,7 +44,6 @@ extern "C" { void app_main(void); }
 void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update, 
                   Buttons* Btn_AP_Conf, RGBLEDs* LED_RGB);
 void nvs_init(void);
-void wifi_init(void);
 void task_creation(Globals* Global, Buttons* Btn_AP_Conf, Buttons* Btn_OTA_Update, 
                    RGBLEDs* LED_RGB);
 
@@ -80,9 +80,8 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
     debug("\n-------------------------------------------------------------------------------\n");
     debug("\nSystem start.\n\n");
 
-    // Non-Volatile-Storage and WiFi interface initialization
+    // Non-Volatile-Storage
     nvs_init();
-    wifi_init();
 
     // Mount SPIFFS and create/load persistent config file
     debug("Mounting SPIFFS FileSystem...\n");
@@ -103,22 +102,6 @@ void system_start(Globals* Global, SimpleSPIFFS* SPIFFS, Buttons* Btn_OTA_Update
 
     LED_RGB->init();
     debug("RGB LED initialized.\n");
-}
-
-// Init WiFi interface
-void wifi_init(void)
-{
-    static wifi_init_config_t cfg;
-
-    debug("Initializing TCP-IP adapter...\n");
-
-    tcpip_adapter_init();
-
-    cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-    esp_wifi_set_mode(WIFI_MODE_APSTA);
-
-    debug("TCP-IP adapter successfuly initialized.\n");
 }
 
 // Initialize Non-Volatile-Storage
@@ -143,15 +126,23 @@ void task_creation(Globals* Global, Buttons* Btn_AP_Conf, Buttons* Btn_OTA_Updat
     task_argv.Btn_OTA_Update = Btn_OTA_Update;
     task_argv.LED_RGB = LED_RGB;
 
+    // Create Network (WiFi) manager Task
+    if(xTaskCreate(&task_manage_wifi, "task_manage_wifi", TASK_MANAGE_WIFI_STACK, 
+                   (void*)&task_argv, tskIDLE_PRIORITY+5, NULL) != pdPASS)
+    {
+        debug("\nError - Can't create WiFi status task (not enough memory?)\n");
+        debug("Rebooting the system...\n\n");
+        esp_restart();
+    }
+
     // Create Device Provision-Configuration Task
-    /*if(xTaskCreate(&task_device_config, "task_device_config", TASK_DEVICE_CONF_STACK, 
+    if(xTaskCreate(&task_device_config, "task_device_config", TASK_DEVICE_CONF_STACK, 
                    (void*)&task_argv, tskIDLE_PRIORITY+5, NULL) != pdPASS)
     {
         debug("\nError - Can't create device configuration task (not enough memory?)\n");
         debug("Rebooting the system...\n\n");
         esp_restart();
     }
-    delay(1000);*/
     
     // Create WiFi Status Task
     if(xTaskCreate(&task_wifi_status, "task_wifi_status", TASK_WIFI_STATUS_STACK, 
