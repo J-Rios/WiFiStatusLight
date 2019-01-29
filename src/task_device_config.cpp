@@ -18,17 +18,17 @@
 #define TAG "HTTPS WebServer"
 #define WEBSERVER_RX_BUFFER_LEN 1024
 
-#define WEBSERVER_ROOT_HTML \
+#define HTTP_RESPONSE \
     "HTTP/1.1 200 OK\r\n" \
     "Content-Type: text/html\r\n" \
-    "Content-Length: 98\r\n\r\n" \
-    "<html>\r\n" \
-    "<head>\r\n" \
-    "<title>ESP32 Server</title></head><body>\r\n" \
-    "Web Content...\r\n" \
-    "</body>\r\n" \
-    "</html>\r\n" \
+    "Content-Length: %d\r\n\r\n" \
+    "%s\r\n" \
     "\r\n"
+
+extern const uint8_t html_root[] asm("_binary_httpsserver_root_html_start");
+extern const uint8_t html_root_end[] asm("_binary_httpsserver_root_html_end");
+
+const size_t html_root_size = html_root_end-html_root;
 
 /**************************************************************************************************/
 
@@ -132,16 +132,14 @@ void start_https_web_server(Globals* Global)
 
     char recv_buf[WEBSERVER_RX_BUFFER_LEN];
 
-    const char send_data[] = WEBSERVER_ROOT_HTML;
-    const int send_bytes = sizeof(send_data); 
-
     ESP_LOGI(TAG, "SSL server context create ......");
     /* For security reasons, it is best if you can use
        TLSv1_2_server_method() here instead of TLS_server_method().
        However some old browsers may not support TLS v1.2.
     */
     ctx = SSL_CTX_new(TLS_server_method());
-    if (!ctx) {
+    if(!ctx)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed1;
     }
@@ -149,7 +147,8 @@ void start_https_web_server(Globals* Global)
 
     ESP_LOGI(TAG, "SSL server context set own certification......");
     ret = SSL_CTX_use_certificate_ASN1(ctx, server_cert_end-server_cert_start, server_cert_start);
-    if (!ret) {
+    if(!ret)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed2;
     }
@@ -157,7 +156,8 @@ void start_https_web_server(Globals* Global)
 
     ESP_LOGI(TAG, "SSL server context set private key......");
     ret = SSL_CTX_use_PrivateKey_ASN1(0, ctx, server_key_start, server_key_end-server_key_start);
-    if (!ret) {
+    if(!ret)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed2;
     }
@@ -165,7 +165,8 @@ void start_https_web_server(Globals* Global)
 
     ESP_LOGI(TAG, "SSL server create socket ......");
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
+    if(sockfd < 0)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed2;
     }
@@ -177,7 +178,8 @@ void start_https_web_server(Globals* Global)
     sock_addr.sin_addr.s_addr = 0;
     sock_addr.sin_port = htons(HTTPS_PORT);
     ret = bind(sockfd, (struct sockaddr*)&sock_addr, sizeof(sock_addr));
-    if (ret) {
+    if(ret)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed3;
     }
@@ -185,7 +187,8 @@ void start_https_web_server(Globals* Global)
 
     ESP_LOGI(TAG, "SSL server socket listen ......");
     ret = listen(sockfd, 32);
-    if (ret) {
+    if(ret)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed3;
     }
@@ -194,7 +197,8 @@ void start_https_web_server(Globals* Global)
 reconnect:
     ESP_LOGI(TAG, "SSL server create ......");
     ssl = SSL_new(ctx);
-    if (!ssl) {
+    if(!ssl)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed3;
     }
@@ -202,7 +206,8 @@ reconnect:
 
     ESP_LOGI(TAG, "SSL server socket accept client ......");
     new_sockfd = accept(sockfd, (struct sockaddr *)&sock_addr, &addr_len);
-    if (new_sockfd < 0) {
+    if(new_sockfd < 0)
+    {
         ESP_LOGI(TAG, "failed" );
         goto failed4;
     }
@@ -212,30 +217,36 @@ reconnect:
 
     ESP_LOGI(TAG, "SSL server accept client ......");
     ret = SSL_accept(ssl);
-    if (!ret) {
+    if(!ret)
+    {
         ESP_LOGI(TAG, "failed");
         goto failed5;
     }
     ESP_LOGI(TAG, "OK");
 
+    // Server handle connections
     ESP_LOGI(TAG, "SSL server read message ......");
-    do {
+    do
+    {
         memset(recv_buf, 0, WEBSERVER_RX_BUFFER_LEN);
         ret = SSL_read(ssl, recv_buf, WEBSERVER_RX_BUFFER_LEN - 1);
-        if (ret <= 0) {
+        if (ret <= 0)
             break;
-        }
+
         ESP_LOGI(TAG, "SSL read: %s", recv_buf);
-        if (strstr(recv_buf, "GET ") &&
-            strstr(recv_buf, " HTTP/1.1")) {
+        if(strstr(recv_buf, "GET ") && strstr(recv_buf, " HTTP/1.1"))
+        {
             ESP_LOGI(TAG, "SSL get matched message");
             ESP_LOGI(TAG, "SSL write message");
-            ret = SSL_write(ssl, send_data, send_bytes);
-            if (ret > 0) {
+            char html[html_root_size+512];
+            memset(html, '\0', html_root_size+512);
+            snprintf(html, html_root_size+512, HTTP_RESPONSE, html_root_size, html_root);
+            html[html_root_size+512-1] = '\0';
+            ret = SSL_write(ssl, html, sizeof(html));
+            if (ret > 0)
                 ESP_LOGI(TAG, "OK");
-            } else {
+            else
                 ESP_LOGI(TAG, "error");
-            }
             break;
         }
     } while (1);

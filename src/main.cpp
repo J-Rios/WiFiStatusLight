@@ -23,8 +23,8 @@
 // Tasks implementations
 #include "task_manage_wifi.h"
 #include "task_device_config.h"
-#include "task_wifistatus.h"
-#include "task_internetstatus.h"
+#include "task_wifi_status.h"
+#include "task_internet_status.h"
 #include "task_ota.h"
 
 // Custom libraries
